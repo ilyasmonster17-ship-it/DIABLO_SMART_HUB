@@ -1,172 +1,171 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" id="diablo-root">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diablo Smart Hub | المنصة الذكية المتكاملة</title>
+    <title>Diablo Smart Hub | منصة تواصل حر</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --p: #ff4500; --bg: #050505; --card: #111; --t: #fff; --gray: #888; }
-        * { box-sizing: border-box; transition: 0.3s; }
-        body { background: var(--bg); color: var(--t); font-family: 'Cairo', sans-serif; margin: 0; overflow-x: hidden; }
+        :root { --p: #ff4500; --bg: #050505; --card: #111; --t: #fff; --green: #2ecc71; }
+        body { background: var(--bg); color: var(--t); font-family: 'Cairo', sans-serif; margin: 0; }
         
-        /* Header */
-        header { padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; background: #000; position: sticky; top: 0; z-index: 1000; }
-        .logo { font-size: 24px; font-weight: bold; color: var(--p); text-decoration: none; }
-        .nav-btns { display: flex; gap: 10px; }
+        /* الهيدر والمنيو السحابي */
+        header { padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; background: #000; border-bottom: 1px solid #222; position: sticky; top: 0; z-index: 1000; }
+        .sidebar { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: #0a0a0a; z-index: 3000; transition: 0.4s; padding: 50px 20px; border-left: 2px solid var(--p); }
+        .sidebar.active { right: 0; }
+        .sidebar a { display: block; color: #fff; text-decoration: none; padding: 15px 0; border-bottom: 1px solid #222; font-size: 0.9rem; }
 
-        /* Hero */
-        .hero { padding: 60px 10%; text-align: center; background: radial-gradient(circle at center, #1a0b00 0%, #050505 80%); }
-        .hero h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        /* شاشة اختيار الهوية */
+        #roleOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 5000; display: flex; align-items: center; justify-content: center; }
+        .role-box { background: var(--card); padding: 40px; border-radius: 20px; border: 1px solid var(--p); text-align: center; max-width: 450px; }
 
-        /* Upload Section (Owner Portal) */
-        .section-box { background: var(--card); border: 1px solid #222; padding: 30px; margin: 20px 5%; border-radius: 20px; }
-        input, textarea, select { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; margin: 10px 0; }
-        input:focus { border-color: var(--p); outline: none; }
+        /* واجهة الحاسبة (اختيارية) */
+        .calc-section { padding: 80px 10%; text-align: center; border-bottom: 1px solid #222; }
+        .calc-input { font-size: 1.5rem; padding: 15px; width: 80%; max-width: 350px; background: #000; border: 2px solid var(--p); color: var(--p); border-radius: 12px; text-align: center; }
+        .vol-note { font-size: 0.85rem; color: var(--green); margin-top: 10px; display: block; }
 
-        /* Subscription Table */
-        .pricing { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; padding: 20px 5%; }
-        .p-card { background: var(--card); border: 1px solid #222; padding: 25px; border-radius: 15px; text-align: center; }
-        .p-card.vip { border: 2px solid var(--p); box-shadow: 0 0 15px rgba(255,69,0,0.2); }
-        .price-val { font-size: 2rem; color: var(--p); font-weight: bold; margin: 10px 0; }
+        /* معرض الصور والرفع */
+        .upload-area { background: var(--card); margin: 30px 5%; padding: 30px; border-radius: 15px; border: 1px solid #333; }
+        .img-grid { display: flex; flex-wrap: wrap; gap: 10px; margin: 15px 0; }
+        .img-item { position: relative; width: 110px; height: 110px; }
+        .img-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; border: 1px solid #444; }
+        .btn-del { position: absolute; top: -8px; right: -8px; background: #ff0000; color: #fff; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-weight: bold; }
 
-        /* Listings Feed */
-        .feed { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; padding: 20px 5%; }
-        .post { background: var(--card); border-radius: 15px; overflow: hidden; border: 1px solid #222; }
-        .post img { width: 100%; height: 200px; object-fit: cover; }
-        .post-content { padding: 15px; }
+        /* شات بوت ديابلو */
+        .chat-container { position: fixed; bottom: 85px; left: 20px; width: 320px; height: 450px; background: #0a0a0a; border: 1px solid var(--p); border-radius: 15px; display: none; flex-direction: column; z-index: 2000; box-shadow: 0 10px 30px rgba(0,0,0,1); }
+        .chat-header { background: var(--p); padding: 12px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .chat-msgs { flex: 1; padding: 15px; overflow-y: auto; font-size: 0.9rem; line-height: 1.6; }
+        .chat-input-box { display: flex; border-top: 1px solid #333; padding: 5px; }
+        .chat-input-box input { flex: 1; background: transparent; border: none; color: #fff; padding: 10px; outline: none; }
 
-        /* UI Elements */
-        .btn { background: var(--p); color: #fff; border: none; padding: 12px 25px; border-radius: 50px; cursor: pointer; font-weight: bold; width: 100%; }
-        .btn-sm { width: auto; padding: 8px 15px; font-size: 0.8rem; }
-        .badge-secure { background: #004d00; color: #00ff00; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; }
-        
-        /* Footer */
-        footer { background: #000; padding: 40px 10%; border-top: 1px solid #222; font-size: 0.85rem; color: var(--gray); }
-        .legal-warning { border: 1px solid #444; padding: 20px; margin-bottom: 20px; border-radius: 10px; }
+        .btn { background: var(--p); color: #fff; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .btn-ghost { background: transparent; border: 1px solid var(--p); color: var(--p); }
     </style>
 </head>
 <body>
 
-<header>
-    <a href="#" class="logo">DIABLO HUB 🏆</a>
-    <div class="nav-btns">
-        <span class="badge-secure">🛡️ نظام محمي SSL</span>
-        <button class="btn btn-sm" style="background:transparent; border:1px solid var(--p); color:var(--p)" onclick="toggleLang()">EN/AR</button>
+<div id="roleOverlay">
+    <div class="role-box">
+        <h2 style="color:var(--p)">مرحباً بك في DIABLO</h2>
+        <p>اختر نوع حسابك للبدء في المنصة المجانية</p>
+        <button class="btn" style="width:100%; margin-bottom:10px" onclick="setRole('investor')">أنا مستثمر / مستأجر</button>
+        <button class="btn btn-ghost" style="width:100%" onclick="setRole('seller')">أنا بائع / مؤجر</button>
     </div>
+</div>
+
+<header>
+    <div style="color:var(--p); font-size:1.5rem; font-weight:bold;">DIABLO HUB</div>
+    <div style="cursor:pointer; font-size:1.8rem; color:var(--p)" onclick="toggleSidebar()">☰</div>
 </header>
 
-<section class="hero">
-    <h1 id="h-title">منصة ديابلو للاستثمار الذكي</h1>
-    <p id="h-desc">الوساطة الرقمية الأكثر أماناً في المغرب</p>
+<div class="sidebar" id="sidebar">
+    <h3 style="color:var(--p)">القائمة الذكية</h3>
+    <a href="#" onclick="showSection('about')">من نحن</a>
+    <a href="#" onclick="showSection('privacy')">سياسة الخصوصية</a>
+    <a href="#" onclick="showSection('disclaimer')">إخلاء المسؤولية</a>
+    <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
+    <button class="btn" style="width:100%" onclick="toggleSidebar()">إغلاق</button>
+</div>
+
+<section class="calc-section">
+    <h1>حاسبة الأرباح والمساهمة 💰</h1>
+    <p>أدخل قيمة الصفقة لمعرفة النسبة المقترحة لدعم المنصة</p>
+    <input type="number" id="rentInput" class="calc-input" placeholder="0.00 MAD" oninput="updateFee()">
+    <h2 id="feeResult" style="color: var(--p); margin-top: 15px;">المساهمة المقترحة: 0 MAD</h2>
+    <span class="vol-note">✨ المساهمة اختيارية تماماً لدعم استمرارية البوت</span>
 </section>
 
-<div class="section-box" style="text-align: center;">
-    <h3 id="calc-t">حاسبة العمولة (2.5%)</h3>
-    <input type="number" id="rentInput" placeholder="أدخل مبلغ الإيجار بالدرهم" oninput="calcFee()">
-    <p id="calc-res" style="font-size: 1.2rem; color: var(--p);">العمولة المتوقعة: 0 MAD</p>
-</div>
-
-<div class="section-box">
-    <h3 id="u-title">📤 إضافة أصل جديد (شقة/فيلا)</h3>
-    <p style="font-size: 0.8rem; color: var(--gray);">* يُمنع وضع روابط خارجية أو أرقام هاتف في الوصف.</p>
-    <input type="text" id="postTitle" placeholder="عنوان العقار" maxlength="50">
-    <textarea id="postDesc" placeholder="وصف العقار (يمنع الروابط)" rows="3"></textarea>
-    <input type="number" id="postPrice" placeholder="السعر المطلوب">
-    <input type="file" id="postImg" accept="image/*" onchange="preview(this)">
-    <img id="imgPre" src="" style="width:100%; max-height:250px; object-fit:cover; display:none; border-radius:10px; margin:10px 0; border:1px solid var(--p);">
-    <button class="btn" onclick="publish()">🔒 نشر آمن عبر ديابلو</button>
-</div>
-
-<div class="pricing">
-    <div class="p-card">
-        <h3>أساسي</h3>
-        <div class="price-val">0 MAD</div>
-        <p>تصفح عام للعقارات</p>
-        <button class="btn" style="background:#333">مجاني</button>
-    </div>
-    <div class="p-card vip">
-        <h3 style="color: gold;">ديابلو VIP</h3>
-        <div class="price-val">199 MAD</div>
-        <p>أولوية 60 دقيقة في الصفقات</p>
-        <button class="btn">اشترك الآن</button>
-    </div>
-    <div class="p-card">
-        <h3>احترافي</h3>
-        <div class="price-val">49 MAD</div>
-        <p>تنبيهات فورية وتقارير</p>
-        <button class="btn">اشترك الآن</button>
+<div id="sellerSection" style="display:none">
+    <div class="upload-area">
+        <h2 style="color:var(--p)">📤 إضافة عقار أو أصل جديد</h2>
+        <input type="text" id="pTitle" placeholder="العنوان">
+        <textarea id="pDesc" placeholder="الوصف التفصيلي (بدون روابط خارجية)" rows="4"></textarea>
+        
+        <div style="margin:20px 0;">
+            <label class="btn" style="cursor:pointer">📸 إضافة صور
+                <input type="file" id="fileInp" multiple accept="image/*" style="display:none" onchange="loadImages(this.files)">
+            </label>
+            <button class="btn btn-ghost" onclick="clearImgs()">حذف الكل</button>
+        </div>
+        <div class="img-grid" id="previewGrid"></div>
+        <button class="btn" style="width:100%" onclick="alert('تم النشر! سيقوم البوت بإخطار المستثمرين.')">نشر الإعلان</button>
     </div>
 </div>
 
-<h2 style="text-align:center;" id="feed-t">العقارات الحالية</h2>
-<div class="feed" id="feedContainer"></div>
-
-<footer>
-    <div class="legal-warning">
-        <strong id="l-title">⚠️ إشعار قانوني (المغرب - القانون 09-08):</strong>
-        <p id="l-body">
-            تعمل منصة "ديابلو" كوسيط تقني رقمي فقط. نحن لا نمتلك الأصول ولا نتدخل في العقود المباشرة. المالك والمطور يخليان مسؤوليتهما عن أي نزاعات بين الأطراف. العمولات هي مقابل توفير الخدمة التكنولوجية. يُحظر تماماً محاولة الاختراق أو الاحتيال.
-        </p>
+<div class="chat-container" id="chatWindow">
+    <div class="chat-header">
+        <span>🤖 مساعد ديابلو</span>
+        <span style="cursor:pointer" onclick="toggleChat()">✖</span>
     </div>
-    <center>© 2026 Diablo Smart Hub Morocco - Secure Platform</center>
-</footer>
+    <div class="chat-msgs" id="chatBody">
+        <div style="background:#222; padding:10px; border-radius:8px; margin-bottom:10px;">
+            ديابلو: مرحباً! أنا مساعدك الذكي. يمكنني إرشادك لأفضل الصفقات أو شرح سياسة المنصة. ماذا تريد أن تعرف؟
+        </div>
+    </div>
+    <div class="chat-input-box">
+        <input type="text" id="chatInp" placeholder="اسأل ديابلو عن أي شيء...">
+        <button onclick="sendChat()" style="background:var(--p); border:none; color:#fff; padding:10px; border-radius:5px; cursor:pointer">إرسال</button>
+    </div>
+</div>
+<button class="btn" style="position:fixed; bottom:20px; left:20px; border-radius:50%; width:60px; height:60px; font-size:25px; z-index:2001" onclick="toggleChat()">💬</button>
 
 <script>
-    let isAr = true;
-
-    // حماية ضد الروابط (Regex)
-    function cleanInput(text) {
-        const urlPattern = /(https?:\/\/[^\s]+)/g;
-        return text.replace(urlPattern, "[رابط محظور]").replace(/<[^>]*>?/gm, '');
+    function setRole(role) {
+        document.getElementById('roleOverlay').style.display = 'none';
+        if(role === 'seller') document.getElementById('sellerSection').style.display = 'block';
     }
 
-    function calcFee() {
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+    function toggleChat() { 
+        let win = document.getElementById('chatWindow');
+        win.style.display = (win.style.display === 'flex') ? 'none' : 'flex';
+    }
+
+    function updateFee() {
         let val = document.getElementById('rentInput').value;
-        document.getElementById('calc-res').innerText = (isAr ? "العمولة المتوقعة: " : "Expected Fee: ") + (val * 0.025).toFixed(2) + " MAD";
+        let fee = (val * 0.025).toFixed(2);
+        document.getElementById('feeResult').innerText = `المساهمة المقترحة: ${fee} MAD`;
     }
 
-    function preview(input) {
-        const file = input.files[0];
-        if (file && file.size < 2*1024*1024) {
+    function loadImages(files) {
+        const grid = document.getElementById('previewGrid');
+        Array.from(files).forEach((file, idx) => {
             const reader = new FileReader();
             reader.onload = e => {
-                const img = document.getElementById('imgPre');
-                img.src = e.target.result;
-                img.style.display = 'block';
+                const id = Date.now() + idx;
+                grid.innerHTML += `
+                    <div class="img-item" id="img-${id}">
+                        <img src="${e.target.result}">
+                        <button class="btn-del" onclick="removeImg(${id})">×</button>
+                    </div>`;
             };
             reader.readAsDataURL(file);
-        } else { alert("الملف كبير جداً (الأقصى 2MB)"); }
+        });
     }
 
-    function publish() {
-        const title = cleanInput(document.getElementById('postTitle').value);
-        const desc = cleanInput(document.getElementById('postDesc').value);
-        const price = document.getElementById('postPrice').value;
-        const img = document.getElementById('imgPre').src;
+    function removeImg(id) { document.getElementById(`img-${id}`).remove(); }
+    function clearImgs() { document.getElementById('previewGrid').innerHTML = ""; }
 
-        if (!title || !price || img === "") { alert("بيانات ناقصة!"); return; }
-
-        const card = `
-            <div class="post">
-                <img src="${img}">
-                <div class="post-content">
-                    <h4>${title}</h4>
-                    <p style="font-size:0.8rem; color:#aaa">${desc}</p>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <b style="color:var(--p)">${price} MAD</b>
-                        <button class="btn btn-sm" onclick="alert('🤖 ديابلو: سيتم الربط مع المالك فور سداد رسوم الحجز.')">ربط ذكي</button>
-                    </div>
-                </div>
-            </div>`;
-        document.getElementById('feedContainer').innerHTML = card + document.getElementById('feedContainer').innerHTML;
-        alert("🛡️ تم الفحص والنشر بنجاح!");
+    function sendChat() {
+        let inp = document.getElementById('chatInp');
+        let body = document.getElementById('chatBody');
+        if(!inp.value) return;
+        
+        body.innerHTML += `<div style="text-align:left; margin-bottom:10px;"><span style="background:var(--p); padding:8px; border-radius:8px;">${inp.value}</span></div>`;
+        
+        // رد البوت التلقائي
+        setTimeout(() => {
+            body.innerHTML += `<div style="background:#222; padding:10px; border-radius:8px; margin-bottom:10px;">ديابلو: فكرة جيدة! أقوم الآن بتحليل طلبك "<span>${inp.value}</span>" ومطابقته مع قاعدة بيانات العقارات في المغرب...</div>`;
+            body.scrollTop = body.scrollHeight;
+        }, 800);
+        inp.value = "";
     }
 
-    function toggleLang() {
-        isAr = !isAr;
-        document.getElementById('diablo-root').dir = isAr ? 'rtl' : 'ltr';
-        // 
+    function showSection(type) {
+        if(type === 'about') alert("ديابلو هب: منصة مغربية ذكية للوساطة الحرة، تهدف لتبسيط الاستثمار العقاري.");
+        if(type === 'privacy') alert("خصوصيتك تهمنا. لا نشارك بياناتك مع أطراف ثالثة ونلتزم بالقانون 09-08.");
+        if(type === 'disclaimer') alert("إخلاء مسؤولية: المنصة توفر أدوات تحليلية وتواصلية فقط. القرار الاستثماري يقع على عاتقك بالكامل.");
+        toggleSidebar();
     }
 </script>
 
