@@ -1,173 +1,228 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="diablo-app">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diablo Smart Hub | منصة تواصل حر</title>
+    <title>Diablo Hub | Investment & Real Estate</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+
     <style>
-        :root { --p: #ff4500; --bg: #050505; --card: #111; --t: #fff; --green: #2ecc71; }
-        body { background: var(--bg); color: var(--t); font-family: 'Cairo', sans-serif; margin: 0; }
+        :root { --p: #ff4500; --bg: #050505; --card: #111; --t: #fff; --border: #222; --bot-bg: #444; }
+        .light-mode { --bg: #f5f5f5; --card: #fff; --t: #222; --border: #ddd; --bot-bg: #eee; }
         
-        /* الهيدر والمنيو السحابي */
-        header { padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; background: #000; border-bottom: 1px solid #222; position: sticky; top: 0; z-index: 1000; }
-        .sidebar { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: #0a0a0a; z-index: 3000; transition: 0.4s; padding: 50px 20px; border-left: 2px solid var(--p); }
-        .sidebar.active { right: 0; }
-        .sidebar a { display: block; color: #fff; text-decoration: none; padding: 15px 0; border-bottom: 1px solid #222; font-size: 0.9rem; }
+        body { background: var(--bg); color: var(--t); font-family: 'Cairo', sans-serif; margin: 0; transition: 0.3s; }
+        header { padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
+        
+        /* شريط البحث */
+        .search-container { padding: 10px 5%; background: var(--card); border-bottom: 1px solid var(--border); }
+        .search-box { width: 100%; padding: 12px; border-radius: 25px; border: 1px solid var(--p); background: var(--bg); color: var(--t); outline: none; }
 
-        /* شاشة اختيار الهوية */
-        #roleOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 5000; display: flex; align-items: center; justify-content: center; }
-        .role-box { background: var(--card); padding: 40px; border-radius: 20px; border: 1px solid var(--p); text-align: center; max-width: 450px; }
+        .side-menu { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: var(--card); z-index: 3000; transition: 0.4s; padding: 20px; border-left: 1px solid var(--border); }
+        .side-menu.active { right: 0; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 2500; }
 
-        /* واجهة الحاسبة (اختيارية) */
-        .calc-section { padding: 80px 10%; text-align: center; border-bottom: 1px solid #222; }
-        .calc-input { font-size: 1.5rem; padding: 15px; width: 80%; max-width: 350px; background: #000; border: 2px solid var(--p); color: var(--p); border-radius: 12px; text-align: center; }
-        .vol-note { font-size: 0.85rem; color: var(--green); margin-top: 10px; display: block; }
+        .post-card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; margin-bottom: 25px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .img-slider { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 10px; }
+        .img-slider img { height: 180px; border-radius: 10px; }
 
-        /* معرض الصور والرفع */
-        .upload-area { background: var(--card); margin: 30px 5%; padding: 30px; border-radius: 15px; border: 1px solid #333; }
-        .img-grid { display: flex; flex-wrap: wrap; gap: 10px; margin: 15px 0; }
-        .img-item { position: relative; width: 110px; height: 110px; }
-        .img-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; border: 1px solid #444; }
-        .btn-del { position: absolute; top: -8px; right: -8px; background: #ff0000; color: #fff; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-weight: bold; }
+        .investor-tools { background: rgba(255, 69, 0, 0.1); border: 1px dashed var(--p); border-radius: 10px; padding: 10px; margin-top: 15px; display: none; }
+        
+        .chat-win { position: fixed; bottom: 85px; left: 20px; width: 320px; height: 450px; background: var(--card); border: 2px solid var(--p); border-radius: 15px; display: none; flex-direction: column; z-index: 2000; }
+        .msg { padding: 10px; border-radius: 10px; max-width: 85%; margin: 5px 0; font-size: 0.9rem; }
+        .bot { background: var(--p); color: white; align-self: flex-start; }
+        .user { background: var(--bot-bg); color: var(--t); align-self: flex-end; }
 
-        /* شات بوت ديابلو */
-        .chat-container { position: fixed; bottom: 85px; left: 20px; width: 320px; height: 450px; background: #0a0a0a; border: 1px solid var(--p); border-radius: 15px; display: none; flex-direction: column; z-index: 2000; box-shadow: 0 10px 30px rgba(0,0,0,1); }
-        .chat-header { background: var(--p); padding: 12px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
-        .chat-msgs { flex: 1; padding: 15px; overflow-y: auto; font-size: 0.9rem; line-height: 1.6; }
-        .chat-input-box { display: flex; border-top: 1px solid #333; padding: 5px; }
-        .chat-input-box input { flex: 1; background: transparent; border: none; color: #fff; padding: 10px; outline: none; }
-
-        .btn { background: var(--p); color: #fff; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .btn-ghost { background: transparent; border: 1px solid var(--p); color: var(--p); }
+        .btn { background: var(--p); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
+        input, textarea { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--t); box-sizing: border-box; }
+        
+        .page-content { display: none; padding: 20px 5%; }
+        .pre-item { position: relative; display: inline-block; margin-right: 5px; }
+        .pre-item img { height: 60px; width: 60px; border-radius: 5px; }
+        .del-btn { position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; border-radius: 50%; width: 18px; height: 18px; cursor: pointer; font-size: 10px; }
     </style>
 </head>
 <body>
 
-<div id="roleOverlay">
-    <div class="role-box">
-        <h2 style="color:var(--p)">مرحباً بك في DIABLO</h2>
-        <p>اختر نوع حسابك للبدء في المنصة المجانية</p>
-        <button class="btn" style="width:100%; margin-bottom:10px" onclick="setRole('investor')">أنا مستثمر / مستأجر</button>
-        <button class="btn btn-ghost" style="width:100%" onclick="setRole('seller')">أنا بائع / مؤجر</button>
-    </div>
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<div class="side-menu" id="sideMenu">
+    <h2 style="color:var(--p)">القائمة</h2>
+    <a href="#" style="display:block; color:var(--t); padding:10px;" onclick="showPage('home')">🏠 الرئيسية</a>
+    <a href="#" style="display:block; color:var(--t); padding:10px;" onclick="showPage('privacy')">🔒 الخصوصية</a>
+    <button class="btn" style="margin-top: 20px;" onclick="toggleMenu()">إغلاق</button>
 </div>
 
 <header>
-    <div style="color:var(--p); font-size:1.5rem; font-weight:bold;">DIABLO HUB</div>
-    <div style="cursor:pointer; font-size:1.8rem; color:var(--p)" onclick="toggleSidebar()">☰</div>
+    <div style="display:flex; align-items:center; gap:10px;">
+        <button onclick="toggleMenu()" style="background:none; border:none; color:var(--p); font-size:24px; cursor:pointer;">☰</button>
+        <div style="font-weight:bold; color:var(--p); font-size:1.4rem;">DIABLO HUB</div>
+    </div>
+    <button onclick="toggleTheme()" style="background:none; border:1px solid var(--p); color:var(--p); border-radius:20px; padding:5px 15px; cursor:pointer;">🌓</button>
 </header>
 
-<div class="sidebar" id="sidebar">
-    <h3 style="color:var(--p)">القائمة الذكية</h3>
-    <a href="#" onclick="showSection('about')">من نحن</a>
-    <a href="#" onclick="showSection('privacy')">سياسة الخصوصية</a>
-    <a href="#" onclick="showSection('disclaimer')">إخلاء المسؤولية</a>
-    <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
-    <button class="btn" style="width:100%" onclick="toggleSidebar()">إغلاق</button>
+<div class="search-container" id="searchContainer" style="display:none;">
+    <input type="text" id="searchInput" class="search-box" placeholder="ابحث عن مدينة، حي، أو نوع عقار..." onkeyup="filterPosts()">
 </div>
 
-<section class="calc-section">
-    <h1>حاسبة الأرباح والمساهمة 💰</h1>
-    <p>أدخل قيمة الصفقة لمعرفة النسبة المقترحة لدعم المنصة</p>
-    <input type="number" id="rentInput" class="calc-input" placeholder="0.00 MAD" oninput="updateFee()">
-    <h2 id="feeResult" style="color: var(--p); margin-top: 15px;">المساهمة المقترحة: 0 MAD</h2>
-    <span class="vol-note">✨ المساهمة اختيارية تماماً لدعم استمرارية البوت</span>
-</section>
-
-<div id="sellerSection" style="display:none">
-    <div class="upload-area">
-        <h2 style="color:var(--p)">📤 إضافة عقار أو أصل جديد</h2>
-        <input type="text" id="pTitle" placeholder="العنوان">
-        <textarea id="pDesc" placeholder="الوصف التفصيلي (بدون روابط خارجية)" rows="4"></textarea>
-        
-        <div style="margin:20px 0;">
-            <label class="btn" style="cursor:pointer">📸 إضافة صور
-                <input type="file" id="fileInp" multiple accept="image/*" style="display:none" onchange="loadImages(this.files)">
-            </label>
-            <button class="btn btn-ghost" onclick="clearImgs()">حذف الكل</button>
-        </div>
-        <div class="img-grid" id="previewGrid"></div>
-        <button class="btn" style="width:100%" onclick="alert('تم النشر! سيقوم البوت بإخطار المستثمرين.')">نشر الإعلان</button>
+<div id="homePage" class="page-content" style="display:block;">
+    <div id="roleSelection" style="text-align:center; padding: 50px 0;">
+        <h2 style="color:var(--p)">مرحباً بك في ديابلو هب</h2>
+        <button class="btn" onclick="initApp('investor')" style="max-width:300px;">دخول المستثمرين (أدوات ذكية)</button>
+        <button class="btn" onclick="initApp('seller')" style="max-width:300px; margin-top:10px; background:#333;">دخول الملاك (نشر عرض)</button>
     </div>
+
+    <div id="uploadArea" style="display:none; background:var(--card); padding:20px; border-radius:15px; border:1px solid var(--border); margin-bottom:30px;">
+        <h3>📤 إضافة عرض جديد</h3>
+        <input type="text" id="pTitle" placeholder="عنوان العقار...">
+        <textarea id="pDesc" rows="3" placeholder="الوصف والسعر (مثلاً: 500,000 درهم)..."></textarea>
+        <input type="file" id="pFiles" multiple accept="image/*" onchange="handleFiles(this.files)">
+        <div id="preGrid" style="display:flex; gap:10px; overflow-x:auto; margin:10px 0;"></div>
+        <button class="btn" id="pubBtn" onclick="uploadToFirebase()">نشر الإعلان</button>
+    </div>
+
+    <div id="cloudFeed"></div>
 </div>
 
-<div class="chat-container" id="chatWindow">
-    <div class="chat-header">
-        <span>🤖 مساعد ديابلو</span>
-        <span style="cursor:pointer" onclick="toggleChat()">✖</span>
-    </div>
-    <div class="chat-msgs" id="chatBody">
-        <div style="background:#222; padding:10px; border-radius:8px; margin-bottom:10px;">
-            ديابلو: مرحباً! أنا مساعدك الذكي. يمكنني إرشادك لأفضل الصفقات أو شرح سياسة المنصة. ماذا تريد أن تعرف؟
-        </div>
-    </div>
-    <div class="chat-input-box">
-        <input type="text" id="chatInp" placeholder="اسأل ديابلو عن أي شيء...">
-        <button onclick="sendChat()" style="background:var(--p); border:none; color:#fff; padding:10px; border-radius:5px; cursor:pointer">إرسال</button>
+<div id="privacyPage" class="page-content">
+    <h1>🔒 سياسة الخصوصية</h1>
+    <p>بياناتك محمية بسيرفرات Firebase المشفرة.</p>
+    <button class="btn" onclick="showPage('home')">عودة</button>
+</div>
+
+<div class="chat-win" id="chatWindow">
+    <div style="background:var(--p); padding:10px; font-weight:bold; color:white;">🤖 ديابلو الذكي</div>
+    <div id="chatBody" style="flex:1; padding:15px; overflow-y:auto; display:flex; flex-direction:column; gap:10px;"></div>
+    <div style="display:flex; padding:10px; border-top:1px solid var(--border);">
+        <input type="text" id="chatInput" placeholder="اسأل ديابلو..." style="margin:0; border:none; outline:none; background:transparent; color:var(--t);">
+        <button onclick="askDiablo()" style="background:var(--p); border:none; color:white; padding:5px 15px; border-radius:5px;">إرسال</button>
     </div>
 </div>
-<button class="btn" style="position:fixed; bottom:20px; left:20px; border-radius:50%; width:60px; height:60px; font-size:25px; z-index:2001" onclick="toggleChat()">💬</button>
+<button onclick="toggleChat()" style="position:fixed; bottom:20px; left:20px; background:var(--p); border:none; width:60px; height:60px; border-radius:50%; font-size:25px; color:white; cursor:pointer; z-index:1001;">💬</button>
 
 <script>
-    function setRole(role) {
-        document.getElementById('roleOverlay').style.display = 'none';
-        if(role === 'seller') document.getElementById('sellerSection').style.display = 'block';
+    const firebaseConfig = {
+        apiKey: "AIzaSyCGWNteBBsejx6UISfvnTY1YmnQeom7vNg",
+        authDomain: "daiblosmart.firebaseapp.com",
+        projectId: "daiblosmart",
+        storageBucket: "daiblosmart.firebasestorage.app",
+        messagingSenderId: "948075676362",
+        appId: "1:948075676362:web:c27d582068712cbe13aa33"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    let tempImgs = [];
+    let userRole = '';
+    let allPosts = [];
+
+    function initApp(role) {
+        userRole = role;
+        document.getElementById('roleSelection').style.display = 'none';
+        document.getElementById('searchContainer').style.display = 'block';
+        if(role === 'seller') document.getElementById('uploadArea').style.display = 'block';
+        loadCloudData();
     }
 
-    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
-    function toggleChat() { 
-        let win = document.getElementById('chatWindow');
-        win.style.display = (win.style.display === 'flex') ? 'none' : 'flex';
-    }
-
-    function updateFee() {
-        let val = document.getElementById('rentInput').value;
-        let fee = (val * 0.025).toFixed(2);
-        document.getElementById('feeResult').innerText = `المساهمة المقترحة: ${fee} MAD`;
-    }
-
-    function loadImages(files) {
-        const grid = document.getElementById('previewGrid');
-        Array.from(files).forEach((file, idx) => {
-            const reader = new FileReader();
-            reader.onload = e => {
-                const id = Date.now() + idx;
-                grid.innerHTML += `
-                    <div class="img-item" id="img-${id}">
-                        <img src="${e.target.result}">
-                        <button class="btn-del" onclick="removeImg(${id})">×</button>
-                    </div>`;
+    function handleFiles(files) {
+        Array.from(files).forEach(f => {
+            const r = new FileReader();
+            r.onload = e => {
+                const id = Date.now() + Math.random();
+                tempImgs.push({id: id, src: e.target.result});
+                renderPreviews();
             };
-            reader.readAsDataURL(file);
+            r.readAsDataURL(f);
         });
     }
 
-    function removeImg(id) { document.getElementById(`img-${id}`).remove(); }
-    function clearImgs() { document.getElementById('previewGrid').innerHTML = ""; }
+    function renderPreviews() {
+        const grid = document.getElementById('preGrid');
+        grid.innerHTML = tempImgs.map(img => `
+            <div class="pre-item">
+                <img src="${img.src}">
+                <button class="del-btn" onclick="removeImg(${img.id})">✕</button>
+            </div>
+        `).join('');
+    }
 
-    function sendChat() {
-        let inp = document.getElementById('chatInp');
-        let body = document.getElementById('chatBody');
+    function removeImg(id) {
+        tempImgs = tempImgs.filter(i => i.id !== id);
+        renderPreviews();
+    }
+
+    function uploadToFirebase() {
+        const title = document.getElementById('pTitle').value;
+        const desc = document.getElementById('pDesc').value;
+        if(!title || tempImgs.length === 0) return alert("أكمل البيانات!");
+        db.collection("diablo_posts").add({
+            title, desc, imgs: tempImgs.map(i => i.src), time: Date.now()
+        }).then(() => location.reload());
+    }
+
+    function loadCloudData() {
+        db.collection("diablo_posts").orderBy("time", "desc").onSnapshot(snap => {
+            allPosts = [];
+            snap.forEach(doc => allPosts.push(doc.data()));
+            renderPosts(allPosts);
+        });
+    }
+
+    function renderPosts(posts) {
+        const feed = document.getElementById('cloudFeed');
+        feed.innerHTML = posts.map(p => `
+            <div class="post-card">
+                <div class="img-slider">${p.imgs.map(i => `<img src="${i}">`).join('')}</div>
+                <h3>${p.title}</h3>
+                <p>${p.desc}</p>
+                ${userRole === 'investor' ? `
+                    <div class="investor-tools" style="display:block;">
+                        <small>📈 تحليل المستثمر:</small>
+                        <div style="display:flex; gap:10px; margin-top:5px;">
+                            <button onclick="calcROI()" style="font-size:11px; padding:4px;">حساب العائد</button>
+                            <button onclick="alert('تقييم الصفقة: جيدة جداً بناءً على موقع العقار')" style="font-size:11px; padding:4px;">تقييم الذكاء الاصطناعي</button>
+                        </div>
+                    </div>
+                ` : ''}
+                <div style="margin-top:10px;"><small>📅 ${new Date(p.time).toLocaleDateString()}</small></div>
+            </div>
+        `).join('');
+    }
+
+    function filterPosts() {
+        const term = document.getElementById('searchInput').value.toLowerCase();
+        const filtered = allPosts.filter(p => 
+            p.title.toLowerCase().includes(term) || p.desc.toLowerCase().includes(term)
+        );
+        renderPosts(filtered);
+    }
+
+    function calcROI() {
+        const price = prompt("أدخل سعر العقار بالدرهم:");
+        const rent = prompt("أدخل الإيجار الشهري المتوقع:");
+        if(price && rent) {
+            const roi = ((rent * 12) / price) * 100;
+            alert("العائد السنوي المتوقع هو: " + roi.toFixed(2) + "%");
+        }
+    }
+
+    function toggleTheme() { document.body.classList.toggle('light-mode'); }
+    function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').style.display = (document.getElementById('overlay').style.display === 'block' ? 'none' : 'block'); }
+    function showPage(p) { document.querySelectorAll('.page-content').forEach(c => c.style.display='none'); document.getElementById(p+'Page').style.display='block'; toggleMenu(); }
+    function toggleChat() { let w = document.getElementById('chatWindow'); w.style.display = (w.style.display === 'flex' ? 'none' : 'flex'); }
+    
+    function askDiablo() {
+        const inp = document.getElementById('chatInput');
+        const body = document.getElementById('chatBody');
         if(!inp.value) return;
-        
-        body.innerHTML += `<div style="text-align:left; margin-bottom:10px;"><span style="background:var(--p); padding:8px; border-radius:8px;">${inp.value}</span></div>`;
-        
-        // رد البوت التلقائي
-        setTimeout(() => {
-            body.innerHTML += `<div style="background:#222; padding:10px; border-radius:8px; margin-bottom:10px;">ديابلو: فكرة جيدة! أقوم الآن بتحليل طلبك "<span>${inp.value}</span>" ومطابقته مع قاعدة بيانات العقارات في المغرب...</div>`;
-            body.scrollTop = body.scrollHeight;
-        }, 800);
+        body.innerHTML += `<div class="msg user">${inp.value}</div>`;
+        let r = "ديابلو: بصفتي خبيراً عقارياً، أنصحك بمقارنة العائد في هذه المنطقة مع الأحياء المجاورة.";
+        if(inp.value.includes("استثمار")) r = "الاستثمار في الشقق الصغيرة حالياً يعطي عائداً أسرع في المدن الكبرى.";
+        setTimeout(() => { body.innerHTML += `<div class="msg bot">${r}</div>`; body.scrollTop = body.scrollHeight; }, 600);
         inp.value = "";
     }
-
-    function showSection(type) {
-        if(type === 'about') alert("ديابلو هب: منصة مغربية ذكية للوساطة الحرة، تهدف لتبسيط الاستثمار العقاري.");
-        if(type === 'privacy') alert("خصوصيتك تهمنا. لا نشارك بياناتك مع أطراف ثالثة ونلتزم بالقانون 09-08.");
-        if(type === 'disclaimer') alert("إخلاء مسؤولية: المنصة توفر أدوات تحليلية وتواصلية فقط. القرار الاستثماري يقع على عاتقك بالكامل.");
-        toggleSidebar();
-    }
 </script>
-
 </body>
 </html>
