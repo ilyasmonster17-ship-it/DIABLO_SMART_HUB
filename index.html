@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Diablo Hub | Premium & Admin Edition</title>
+    <title>Diablo Hub | Pro Edition</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -15,114 +15,129 @@
         :root { --p: #ff4500; --bg: #050505; --card: #111; --t: #fff; --border: #222; --gold: #ffd700; }
         .light-mode { --bg: #f5f5f5; --card: #fff; --t: #222; --border: #ddd; }
         body { background: var(--bg); color: var(--t); font-family: 'Cairo', sans-serif; margin: 0; padding-bottom: 120px; transition: 0.3s; }
-        header { padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; gap: 10px; }
         
+        /* Header & Search */
+        header { padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; gap: 10px; }
         .search-bar { flex: 1; display: flex; background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 5px 15px; }
         .search-bar input { border: none; background: none; color: var(--t); outline: none; width: 100%; font-size: 14px; }
 
-        .categories { display: flex; overflow-x: auto; gap: 10px; padding: 10px 5%; white-space: nowrap; }
-        .cat-btn { background: var(--card); border: 1px solid var(--border); color: var(--t); padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 13px; }
-        .cat-btn.active { background: var(--p); border-color: var(--p); color: white; }
+        /* Floating Publish Button (TikTok Style) */
+        .publish-btn-main { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 65px; height: 45px; background: linear-gradient(90deg, #00f2ea 0%, #ff0050 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; z-index: 4500; cursor: pointer; border: none; box-shadow: 0 0 15px rgba(0,0,0,0.5); }
+        .publish-btn-main::after { content: '+'; color: black; font-size: 30px; font-weight: bold; background: white; width: 30px; height: 30px; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
 
-        .publish-btn-main { position: fixed; bottom: 95px; left: 50%; transform: translateX(-50%); width: 60px; height: 45px; background: linear-gradient(90deg, #00f2ea 0%, #ff0050 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; z-index: 4500; cursor: pointer; border: none; }
-        .publish-btn-main::after { content: '+'; color: black; font-size: 30px; font-weight: bold; background: white; width: 30px; height: 30px; border-radius: 5px; display: flex; align-items: center; justify-content: center; }
+        /* Posts & Premium */
+        .post-card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; margin: 0 5% 20px 5%; padding: 15px; position: relative; transition: 0.3s; }
+        .post-card.premium { border: 2px solid var(--gold); box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
+        .price-tag { position: absolute; top: 10px; left: 10px; background: #25d366; color: white; padding: 3px 12px; border-radius: 20px; font-weight: bold; z-index: 10; }
 
-        .publish-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 7000; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: var(--card); width: 100%; max-width: 500px; border-radius: 20px; padding: 20px; position: relative; max-height: 90vh; overflow-y: auto; }
-
-        .post-card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; margin: 0 5% 20px 5%; padding: 15px; position: relative; border-right: 4px solid var(--p); }
-        .post-card.premium { border: 2px solid var(--gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
-        .premium-badge { background: var(--gold); color: black; font-size: 10px; font-weight: bold; padding: 2px 8px; border-radius: 5px; position: absolute; top: 10px; right: 10px; }
-        
+        /* Sidebar & Menu */
         .side-menu { position: fixed; top: 0; right: -100%; width: 280px; height: 100%; background: var(--card); z-index: 8000; transition: 0.4s; padding: 20px; overflow-y: auto; }
         .side-menu.active { right: 0; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 7500; }
-        
-        .premium-promo { background: linear-gradient(45deg, #1a1a1a, #000); border: 1px solid var(--gold); padding: 15px; border-radius: 12px; margin: 15px 0; text-align: center; }
-        .btn { background: var(--p); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; transition: 0.3s; }
-        .btn-gold { background: var(--gold); color: black; }
-        
-        #diablo-bot-icon { position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px; background: var(--p); border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 5500; cursor: pointer; border: 2px solid white; font-size: 24px; box-shadow: 0 0 15px var(--p); }
-        #bot-chat-window { position: fixed; bottom: 90px; left: 20px; width: 300px; height: 400px; background: var(--card); border: 1px solid var(--p); border-radius: 15px; display: none; flex-direction: column; z-index: 6000; overflow: hidden; }
 
-        .bot-msg { background: #222; padding: 8px 12px; border-radius: 12px; font-size: 13px; align-self: flex-start; max-width: 80%; }
-        .user-msg { background: var(--p); color: white; padding: 8px 12px; border-radius: 12px; font-size: 13px; align-self: flex-end; }
+        /* Bot Chat Window */
+        #bot-chat-window { position: fixed; bottom: 100px; left: 20px; width: 320px; height: 450px; background: var(--card); border: 1px solid var(--p); border-radius: 15px; display: none; flex-direction: column; z-index: 6000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .chat-area { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 13px; }
+        .msg.bot { background: #222; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .msg.user { background: var(--p); align-self: flex-end; border-bottom-right-radius: 2px; }
+
+        .lang-btn { background: none; border: 1px solid var(--p); color: var(--p); border-radius: 20px; padding: 4px 10px; font-size: 12px; cursor: pointer; }
+        
+        .premium-box { background: linear-gradient(45deg, #1a1a1a, #000); border: 1px solid var(--gold); border-radius: 12px; padding: 15px; text-align: center; margin: 10px 0; }
     </style>
 </head>
 <body>
 
-<div id="startScreen" style="position:fixed; inset:0; background:var(--bg); z-index:9500; display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px;">
-    <h1 style="color:var(--p)">مرحباً بك في ديابلو هب</h1>
-    <button class="btn" style="max-width:300px;" onclick="setRole('investor')">أنا مستثمر (أبحث عن عقار)</button>
-    <button class="btn" style="max-width:300px; background:#222; border:1px solid var(--p);" onclick="setRole('seller')">أنا مالك (أريد النشر)</button>
-</div>
-
 <header>
     <button onclick="toggleMenu()" style="background:none; border:none; color:var(--p); font-size:24px;">☰</button>
-    <div class="search-bar"><input type="text" id="searchInput" placeholder="ابحث هنا..." oninput="filterPosts()"></div>
-    <button onclick="toggleTheme()" style="background:none; border:1px solid var(--p); color:var(--p); border-radius:20px; padding:4px 10px; font-size:12px;">MODE</button>
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="ابحث عن عقار..." oninput="filterPosts()">
+    </div>
+    <div style="display:flex; gap:5px;">
+        <button class="lang-btn" onclick="toggleLang()">EN/عربي</button>
+        <button onclick="toggleTheme()" class="lang-btn">MODE</button>
+    </div>
 </header>
 
+<div class="categories">
+    <button class="cat-btn active" onclick="setCat('الكل')">الكل</button>
+    <button class="cat-btn" onclick="setCat('شقق')">🏙️ شقق</button>
+    <button class="cat-btn" onclick="setCat('فيلات')">🏰 فيلات</button>
+    <button class="cat-btn" onclick="setCat('منازل')">🏡 منازل</button>
+</div>
+
 <div id="homePageContent">
-    <div class="categories">
-        <button class="cat-btn active" onclick="setCat('الكل')">الكل</button>
-        <button class="cat-btn" onclick="setCat('شقق')">🏙️ شقق</button>
-        <button class="cat-btn" onclick="setCat('فيلات')">🏰 فيلات</button>
-    </div>
     <div id="cloudFeed"></div>
 </div>
 
-<div class="side-menu" id="sideMenu">
-    <h3 style="color:var(--p)">DIABLO HUB</h3>
-    
-    <div class="premium-promo">
-        <h4 style="color:var(--gold); margin:0;">🚀 ضاعف مبيعاتك الآن!</h4>
-        <p style="font-size:12px; color:#ccc;">اجعل عقارك في الصدارة وشاهده الآلاف يومياً بـ <span style="color:var(--gold); font-weight:bold;">1$ فقط!</span></p>
-        <a href="https://wa.me/212695067840" target="_blank" style="text-decoration:none;">
-            <button class="btn btn-gold"><i class="fab fa-whatsapp"></i> ميز منشوري الآن</button>
-        </a>
-    </div>
-
-    <div id="adminControls" style="display:none; border:1px dashed var(--gold); padding:10px; border-radius:10px; margin-top:10px;">
-        <p style="color:var(--gold); font-size:12px;">لوحة الإدارة</p>
-        <button class="btn" style="background:var(--gold); color:black;" onclick="togglePublishModal(true)">✨ نشر منشور مميز</button>
-    </div>
-
-    <hr style="border:0.5px solid #333;">
-    <button class="btn" onclick="showPage('home'); toggleMenu()">🏠 الرئيسية</button>
-    <button class="btn" style="background:#222;" onclick="showPage('privacy'); toggleMenu()">🛡️ الخصوصية</button>
-    <hr>
-    <button class="btn" style="background:red;" onclick="auth.signOut().then(()=>location.reload())">تسجيل الخروج</button>
-</div>
+<button class="publish-btn-main" id="mainPublishBtn" onclick="togglePublishModal()"></button>
 
 <div class="publish-modal" id="publishModal">
     <div class="modal-content">
-        <h3 id="modalTitle" style="color:var(--p)">نشر منشور جديد</h3>
+        <h3 id="pubTitle" style="color:var(--p)">نشر منشور جديد</h3>
+        <select id="pType"><option value="شقق">شقة</option><option value="فيلات">فيلا</option><option value="منازل">منزل</option></select>
         <input type="text" id="pTitle" placeholder="العنوان">
         <input type="number" id="pPrice" placeholder="السعر">
-        <textarea id="pDesc" rows="4" placeholder="الوصف"></textarea>
+        <textarea id="pDesc" rows="4" placeholder="التفاصيل..."></textarea>
         <input type="tel" id="pPhone" placeholder="رقم الهاتف">
-        <label class="custom-file-upload"><input type="file" id="pFiles" multiple accept="image/*" onchange="handleFiles(this.files)" style="display:none;">📸 إضافة الصور</label>
+        
+        <label class="custom-file-upload">
+            <input type="file" id="pFiles" multiple accept="image/*" onchange="handleFiles(this.files)" style="display:none;">
+            <i class="fas fa-camera"></i> أضف صور العقار
+        </label>
         <div id="preGrid" style="display:flex; gap:5px; margin:10px 0; overflow-x:auto;"></div>
-        <div style="display:flex; gap:10px;">
-            <button class="btn" id="finalPostBtn" onclick="uploadToFirebase()">نشر</button>
-            <button class="btn" style="background:#444;" onclick="togglePublishModal()">إلغاء</button>
-        </div>
+        
+        <button class="btn" onclick="uploadToFirebase()">نشر الآن</button>
+        <button class="btn" style="background:#333;" onclick="togglePublishModal()">إلغاء</button>
     </div>
 </div>
 
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
+<div class="side-menu" id="sideMenu">
+    <h3 style="color:var(--p)">DIABLO HUB</h3>
+    
+    <div class="premium-box">
+        <h4 style="color:var(--gold); margin:0;">✨ المنشورات المميزة</h4>
+        <p style="font-size:11px;">احصل على آلاف المشاهدات مقابل 1$ فقط!</p>
+        <a href="https://wa.me/212695067840" target="_blank" style="color:inherit; text-decoration:none;">
+            <button class="btn" style="background:#25d366; color:white;"><i class="fab fa-whatsapp"></i> تواصل معي للتميز</button>
+        </a>
+    </div>
+
+    <div id="adminPanel" style="display:none; border:1px dashed var(--gold); padding:10px; margin-top:10px;">
+        <p style="color:var(--gold); font-size:12px;">لوحة الأدمن</p>
+        <button class="btn" style="background:var(--gold); color:black;" onclick="setPostingType(true)">نشر منشور مميز ✨</button>
+    </div>
+
+    <hr>
+    <button class="btn" onclick="showPage('privacy')">🛡️ سياسة الخصوصية</button>
+    <button class="btn" onclick="showPage('disclaimer')">⚠️ إخلاء المسؤولية</button>
+    <button class="btn" style="background:red;" onclick="auth.signOut().then(()=>location.reload())">خروج</button>
+</div>
+
+<div id="privacyPage" class="legal-page">
+    <button class="btn" onclick="showPage('home')">✕ رجوع</button>
+    <h2>سياسة الخصوصية</h2>
+    <p>نحن نحمي بياناتك ولا نشاركها مع أي طرف ثالث...</p>
+</div>
+<div id="disclaimerPage" class="legal-page">
+    <button class="btn" onclick="showPage('home')">✕ رجوع</button>
+    <h2>إخلاء المسؤولية</h2>
+    <p>الموقع وسيط فقط، ولسنا مسؤولين عن أي تعاملات مالية تتم بين المستخدمين...</p>
+</div>
+
 <div id="diablo-bot-icon" onclick="toggleChat()">🤖</div>
 <div id="bot-chat-window">
     <div style="background:var(--p); padding:10px; color:white; display:flex; justify-content:space-between;">
-        <span><i class="fas fa-robot"></i> ديابلو مساعدك الذكي</span>
+        <span>ديابلو بوت (مساعدك الذكي)</span>
         <span onclick="toggleChat()" style="cursor:pointer">✕</span>
     </div>
-    <div id="chat-msgs" style="flex:1; padding:15px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; background:rgba(0,0,0,0.3);"></div>
+    <div class="chat-area" id="chatArea"></div>
     <div style="display:flex; padding:10px; border-top:1px solid var(--border);">
-        <input type="text" id="bot-input" style="flex:1; border:none; background:none; color:var(--t);" placeholder="اسألني عن أي شيء...">
-        <button onclick="sendToBot()" style="border:none; background:none; color:var(--p); font-size:20px;"><i class="fas fa-paper-plane"></i></button>
+        <input type="text" id="bot-input" style="flex:1; border:none; background:none; color:var(--t);" placeholder="تحدث معي...">
+        <button onclick="sendMessageToBot()" style="border:none; background:none; color:var(--p); font-size:18px;"><i class="fas fa-paper-plane"></i></button>
     </div>
 </div>
 
@@ -138,89 +153,116 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const auth = firebase.auth();
-    let currentUser = null, isAdmin = false, isPostingPremium = false;
+    let tempImgs = [], currentCat = 'الكل', currentUser = null, isAdmin = false, isPremiumPost = false;
 
     auth.onAuthStateChanged(user => {
         if(user) {
             currentUser = user;
             if(user.email === "diablo@admin.com") {
                 isAdmin = true;
-                document.getElementById('adminControls').style.display = 'block';
+                document.getElementById('adminPanel').style.display = 'block';
             }
-            document.getElementById('startScreen').style.display = 'flex';
             loadCloudData();
         }
     });
 
-    function handleAuth() {
-        const e = document.getElementById('email').value, p = document.getElementById('pass').value;
-        if(e === "diablo@admin.com" && p !== "3505Ilyas2008") return alert("خطأ في كلمة سر الأدمن!");
-        auth.signInWithEmailAndPassword(e, p).catch(() => auth.createUserWithEmailAndPassword(e, p));
+    function filterPosts() {
+        const val = document.getElementById('searchInput').value.toLowerCase();
+        document.querySelectorAll('.post-card').forEach(card => {
+            const title = card.querySelector('h3').innerText.toLowerCase();
+            card.style.display = title.includes(val) ? 'block' : 'none';
+        });
     }
 
-    function togglePublishModal(isPremium = false) {
-        isPostingPremium = isPremium;
-        const m = document.getElementById('publishModal');
-        document.getElementById('modalTitle').innerText = isPremium ? "نشر منشور مميز ✨" : "نشر منشور جديد";
-        m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
-    }
-
-    function uploadToFirebase() {
-        const t = document.getElementById('pTitle').value, d = document.getElementById('pDesc').value, pr = document.getElementById('pPrice').value, ph = document.getElementById('pPhone').value;
-        db.collection("diablo_posts").add({
-            title: t, desc: d, price: pr, phone: ph, 
-            imgs: tempImgs.map(i => i.src), 
-            time: Date.now(), 
-            userId: currentUser.uid,
-            isPremium: isPostingPremium
-        }).then(() => location.reload());
+    function setPostingType(premium) {
+        isPremiumPost = premium;
+        togglePublishModal();
+        document.getElementById('pubTitle').innerText = premium ? "نشر منشور مميز ✨" : "نشر منشور جديد";
     }
 
     function loadCloudData() {
-        db.collection("diablo_posts").orderBy("isPremium", "desc").orderBy("time", "desc").onSnapshot(snap => {
+        db.collection("diablo_posts").orderBy("time", "desc").onSnapshot(snap => {
             const feed = document.getElementById('cloudFeed'); feed.innerHTML = "";
             snap.forEach(doc => {
                 const p = doc.data();
+                if(currentCat !== 'الكل' && p.type !== currentCat) return;
                 feed.innerHTML += `
                     <div class="post-card ${p.isPremium ? 'premium' : ''}">
-                        ${p.isPremium ? '<span class="premium-badge"><i class="fas fa-star"></i> مُميز</span>' : ''}
+                        ${p.isPremium ? '<span style="color:gold; font-size:10px;"><i class="fas fa-star"></i> مميز</span>' : ''}
                         <span class="price-tag">${p.price}$</span>
                         <div style="display:flex; overflow-x:auto; gap:10px;">${p.imgs.map(i => `<img src="${i}" style="height:150px; border-radius:10px;">`).join('')}</div>
                         <h3>${p.title}</h3>
                         <p style="font-size:13px; color:#aaa;">${p.desc}</p>
-                        <a href="tel:${p.phone}" style="background:var(--p); color:white; padding:10px; border-radius:8px; text-decoration:none; display:block; text-align:center;">📞 اتصال بالمالك</a>
+                        <a href="tel:${p.phone}" style="background:var(--p); color:white; padding:10px; border-radius:8px; text-decoration:none; display:block; text-align:center;">📞 اتصل الآن</a>
+                        ${(isAdmin || (currentUser && p.userId === currentUser.uid)) ? `<button onclick="deletePost('${doc.id}')" style="color:red; background:none; border:none; margin-top:10px;">🗑️ حذف</button>` : ''}
                     </div>`;
             });
         });
     }
 
-    // نظام البوت المطور
+    function uploadToFirebase() {
+        const t = document.getElementById('pTitle').value, d = document.getElementById('pDesc').value, ph = document.getElementById('pPhone').value, pr = document.getElementById('pPrice').value, tp = document.getElementById('pType').value;
+        if(!t || tempImgs.length === 0) return alert("البيانات ناقصة!");
+        db.collection("diablo_posts").add({ 
+            title: t, desc: d, phone: ph, price: pr, type: tp, 
+            imgs: tempImgs.map(i => i.src), 
+            time: Date.now(), 
+            userId: currentUser.uid,
+            isPremium: isPremiumPost
+        }).then(() => { location.reload(); });
+    }
+
+    // Bot Logic
     function toggleChat() {
-        const c = document.getElementById('bot-chat-window');
-        if(c.style.display !== 'flex') {
-            c.style.display = 'flex';
-            if(document.getElementById('chat-msgs').innerHTML === "") {
-                setTimeout(() => {
-                    addBotMsg("مرحباً بك! أنا مساعدك الآلي ديابلو 🤖");
-                    addBotMsg("يمكنك هنا بيع وشراء العقارات بكل سهولة. لنشر عقارك، اضغط على زر (+) في الأسفل.");
-                    addBotMsg("هل تعلم؟ يمكنك تمييز منشورك ليظهر في المقدمة مقابل 1$ فقط! تواصل مع الإدارة عبر الواتساب في القائمة الجانبية.");
-                }, 500);
-            }
-        } else { c.style.display = 'none'; }
+        const win = document.getElementById('bot-chat-window');
+        const open = win.style.display === 'flex';
+        win.style.display = open ? 'none' : 'flex';
+        if(!open && document.getElementById('chatArea').innerHTML === "") {
+            addMsg("مرحبا! أنا مساعدك ديابلو 🤖 كيف أساعدك اليوم؟", 'bot');
+            setTimeout(() => addMsg("يمكنك النشر عبر الضغط على زر (+) في الأسفل، أو طلب منشور مميز لتصدر القائمة!", 'bot'), 1000);
+        }
     }
 
-    function addBotMsg(txt) {
-        const msg = document.createElement('div');
-        msg.className = 'bot-msg';
-        msg.innerHTML = txt;
-        document.getElementById('chat-msgs').appendChild(msg);
-        document.getElementById('chat-msgs').scrollTop = document.getElementById('chat-msgs').scrollHeight;
+    function addMsg(text, sender) {
+        const div = document.createElement('div');
+        div.className = `msg ${sender}`;
+        div.innerText = text;
+        document.getElementById('chatArea').appendChild(div);
+        document.getElementById('chatArea').scrollTop = document.getElementById('chatArea').scrollHeight;
     }
 
-    // بقية الوظائف الأساسية (نفس الكود السابق لضمان العمل)
-    function setRole(role) { document.getElementById('startScreen').style.display = 'none'; if(role === 'seller') document.getElementById('mainPublishBtn').style.display = 'flex'; }
+    function sendMessageToBot() {
+        const input = document.getElementById('bot-input');
+        if(!input.value) return;
+        addMsg(input.value, 'user');
+        const userText = input.value.toLowerCase();
+        input.value = "";
+        
+        setTimeout(() => {
+            if(userText.includes("نشر")) addMsg("للنشر، اضغط على زر (+) الملون أسفل الشاشة.", 'bot');
+            else if(userText.includes("تميز") || userText.includes("دولار")) addMsg("المنشور المميز يجعلك في الصدارة! تواصل مع المدير عبر واتساب في القائمة الجانبية.", 'bot');
+            else addMsg("أنا معك! هل تريد الاستفسار عن شقق أم فيلات؟", 'bot');
+        }, 800);
+    }
+
+    function handleFiles(files) {
+        Array.from(files).forEach(f => {
+            const r = new FileReader();
+            r.onload = e => {
+                const id = Date.now();
+                tempImgs.push({src: e.target.result, id: id});
+                document.getElementById('preGrid').innerHTML += `<div id="${id}" style="position:relative"><img src="${e.target.result}" style="width:60px;height:60px;border-radius:5px;"><button onclick="removeImg(${id})" style="position:absolute;top:0;right:0;background:red;color:white;border:none;border-radius:50%;width:20px;height:20px;">✕</button></div>`;
+            };
+            r.readAsDataURL(f);
+        });
+    }
+    function removeImg(id) { tempImgs = tempImgs.filter(i => i.id != id); document.getElementById(id).remove(); }
+    function togglePublishModal() { const m = document.getElementById('publishModal'); m.style.display = (m.style.display === 'flex') ? 'none' : 'flex'; }
     function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').style.display = (document.getElementById('overlay').style.display==='block')?'none':'block'; }
     function toggleTheme() { document.body.classList.toggle('light-mode'); }
+    function showPage(p) { document.querySelectorAll('.legal-page, #homePageContent').forEach(d => d.style.display='none'); document.getElementById(p+'Page').style.display='block'; toggleMenu(); }
+    function setCat(c) { currentCat = c; document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active')); event.target.classList.add('active'); loadCloudData(); }
 </script>
 </body>
-</html>
+    </html>
+    
