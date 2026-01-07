@@ -1,240 +1,213 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" id="diablo-app">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Diablo Hub | Final Fixed Edition</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Diablo Hub | Pro & Secure Edition</title>
 
-    <style>
-        :root { --p: #ff4500; --bg: #050505; --card: #111; --t: #fff; --border: #222; --gold: #ffd700; }
-        .light-mode { --bg: #f5f5f5; --card: #fff; --t: #222; --border: #ddd; }
-        body { background: var(--bg); color: var(--t); font-family: 'Cairo', sans-serif; margin: 0; padding-bottom: 100px; overflow-x: hidden; }
-        
-        /* Screens Management */
-        #authScreen, #startScreen, #mainApp { display: none; }
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
 
-        header { padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
-        .search-bar { flex: 1; display: flex; background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 5px 15px; margin: 0 10px; }
-        .search-bar input { border: none; background: none; color: var(--t); outline: none; width: 100%; }
+<style>
+:root { --p: #ff4500; --bg: #050505; --card: #111; --t: #fff; --border: #222; }
+.light-mode { --bg: #f5f5f5; --card: #fff; --t: #222; --border: #ddd; }
+body { background: var(--bg); color: var(--t); font-family: 'Cairo', sans-serif; margin:0; padding-bottom:120px; transition:0.3s; }
+header { padding:15px 5%; display:flex; justify-content:space-between; align-items:center; background:var(--card); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:1000; gap:10px; }
+.search-bar { flex:1; display:flex; background:var(--bg); border:1px solid var(--border); border-radius:20px; padding:5px 15px; }
+.search-bar input { border:none; background:none; color:var(--t); outline:none; width:100%; font-size:14px; }
+.categories { display:flex; overflow-x:auto; gap:10px; padding:10px 5%; white-space:nowrap; }
+.cat-btn { background: var(--card); border:1px solid var(--border); color:var(--t); padding:8px 20px; border-radius:20px; cursor:pointer; font-size:13px; }
+.cat-btn.active { background: var(--p); border-color: var(--p); color:white; }
+.publish-btn-main { position:fixed; bottom:95px; left:50%; transform:translateX(-50%); width:60px; height:45px; background:linear-gradient(90deg,#00f2ea 0%,#ff0050 100%); border-radius:12px; display:flex; align-items:center; justify-content:center; z-index:4500; cursor:pointer; border:none; box-shadow:0 0 15px rgba(0,0,0,0.5);}
+.publish-btn-main::after { content:'+'; color:black; font-size:30px; font-weight:bold; background:white; width:30px; height:30px; border-radius:5px; display:flex; align-items:center; justify-content:center;}
+.publish-modal { position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:7000; display:none; align-items:center; justify-content:center; padding:20px; }
+.modal-content { background: var(--card); width:100%; max-width:500px; border-radius:20px; padding:20px; position:relative; max-height:90vh; overflow-y:auto; }
+.custom-file-upload { display:inline-block; padding:20px; background:#1a1a1a; border:2px dashed var(--p); border-radius:15px; cursor:pointer; text-align:center; width:100%; box-sizing:border-box; color:var(--p); }
+.post-card { background: var(--card); border:1px solid var(--border); border-radius:15px; margin:0 5% 20px 5%; padding:15px; position:relative; border-right:4px solid var(--p); }
+.price-tag { position:absolute; top:10px; left:10px; background:#25d366; color:white; padding:3px 12px; border-radius:20px; font-weight:bold; font-size:14px; }
+#diablo-bot-icon { position:fixed; bottom:20px; left:20px; width:60px; height:60px; background:var(--p); border-radius:50%; display:flex; align-items:center; justify-content:center; z-index:5500; cursor:pointer; border:2px solid white; font-size:24px; }
+#bot-chat-window { position:fixed; bottom:90px; left:20px; width:300px; height:400px; background:var(--card); border:1px solid var(--p); border-radius:15px; display:none; flex-direction:column; z-index:6000; }
+.side-menu { position:fixed; top:0; right:-100%; width:280px; height:100%; background:var(--card); z-index:8000; transition:0.4s; padding:20px; overflow-y:auto; }
+.side-menu.active { right:0; }
+.overlay { position:fixed; inset:0; background:rgba(0,0,0,0.8); display:none; z-index:7500; }
+.legal-page { display:none; padding:20px; line-height:1.6; }
+.btn { background: var(--p); color:white; border:none; padding:12px; border-radius:8px; cursor:pointer; font-weight:bold; width:100%; margin-top:10px; }
+input, textarea, select { width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px solid var(--border); background:var(--bg); color:var(--t); box-sizing:border-box; }
+.ads-footer { position:fixed; bottom:0; left:0; width:100%; height:85px; background:#000; border-top:2px solid var(--p); display:flex; justify-content:space-around; align-items:center; z-index:4000; }
 
-        .categories { display: flex; overflow-x: auto; gap: 10px; padding: 10px 5%; white-space: nowrap; }
-        .cat-btn { background: var(--card); border: 1px solid var(--border); color: var(--t); padding: 8px 15px; border-radius: 20px; cursor: pointer; }
-        .cat-btn.active { background: var(--p); border-color: var(--p); }
+/* لون جذاب لقسم المنشورات المميزة */
+.special-posts-btn { background: linear-gradient(90deg, #ffcc00, #ff7700); color: black; }
+.special-posts-btn:hover { filter: brightness(1.2); }
 
-        /* Floating Publish Button */
-        .publish-btn-main { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 60px; height: 45px; background: linear-gradient(90deg, #00f2ea 0%, #ff0050 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; z-index: 9999; cursor: pointer; border: none; }
-        .publish-btn-main::after { content: '+'; color: black; font-size: 30px; font-weight: bold; background: white; width: 30px; height: 30px; border-radius: 5px; display: flex; align-items: center; justify-content: center; }
-
-        /* Post Card */
-        .post-card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; margin: 15px 5%; padding: 15px; position: relative; border-right: 4px solid var(--p); }
-        .post-card.premium { border: 2px solid var(--gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); }
-        .price-tag { position: absolute; top: 10px; left: 10px; background: #25d366; color: white; padding: 3px 12px; border-radius: 20px; font-weight: bold; }
-
-        /* Side Menu */
-        .side-menu { position: fixed; top: 0; right: -100%; width: 280px; height: 100%; background: var(--card); z-index: 8500; transition: 0.4s; padding: 20px; }
-        .side-menu.active { right: 0; }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 8000; }
-
-        /* General UI */
-        .btn { background: var(--p); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
-        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--t); box-sizing: border-box; }
-        
-        #bot-chat-window { position: fixed; bottom: 90px; left: 20px; width: 300px; height: 400px; background: var(--card); border: 1px solid var(--p); border-radius: 15px; display: none; flex-direction: column; z-index: 9000; overflow: hidden; }
-        .chat-area { flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-    </style>
+</style>
 </head>
 <body>
 
-<div id="authScreen" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; padding:20px;">
-    <h2 style="color:var(--p)">DIABLO HUB</h2>
-    <div style="width:100%; max-width:350px; background:var(--card); padding:20px; border-radius:15px;">
-        <input type="email" id="email" placeholder="البريد الإلكتروني">
-        <input type="password" id="pass" placeholder="كلمة المرور">
-        <button class="btn" onclick="handleAuth()">دخول / تسجيل</button>
-    </div>
-</div>
-
-<div id="startScreen" style="flex-direction:column; align-items:center; justify-content:center; height:100vh; text-align:center; padding:20px;">
-    <h1 style="color:var(--p)">مرحباً بك مجدداً</h1>
-    <p>كيف تود استخدام الموقع اليوم؟</p>
+<!-- شاشة اختيار المستثمر / المالك -->
+<div id="startScreen" style="position:fixed; inset:0; background:var(--bg); z-index:9500; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px;">
+    <h1 style="color:var(--p)">مرحباً بك في ديابلو هب</h1>
+    <p>اختر صفتك للمتابعة:</p>
     <button class="btn" style="max-width:300px;" onclick="setRole('investor')">أنا مستثمر (أبحث عن عقار)</button>
     <button class="btn" style="max-width:300px; background:#222; border:1px solid var(--p);" onclick="setRole('seller')">أنا مالك (أريد النشر)</button>
 </div>
 
-<div id="mainApp">
-    <header>
-        <button onclick="toggleMenu()" style="background:none; border:none; color:var(--p); font-size:24px;">☰</button>
-        <div class="search-bar"><input type="text" id="searchInput" placeholder="ابحث هنا..." oninput="filterPosts()"></div>
-        <button onclick="toggleTheme()" class="cat-btn">MODE</button>
-    </header>
+<!-- الهيدر -->
+<header>
+    <button onclick="toggleMenu()" style="background:none; border:none; color:var(--p); font-size:24px;">☰</button>
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="ابحث عن شقة، فيلا..." oninput="filterPosts()">
+    </div>
+    <button onclick="toggleTheme()" style="background:none; border:1px solid var(--p); color:var(--p); border-radius:20px; padding:4px 10px; font-size:12px;">MODE</button>
+</header>
 
+<!-- محتوى الصفحة الرئيسية -->
+<div id="homePageContent">
     <div class="categories">
         <button class="cat-btn active" onclick="setCat('الكل')">الكل</button>
         <button class="cat-btn" onclick="setCat('شقق')">🏙️ شقق</button>
         <button class="cat-btn" onclick="setCat('فيلات')">🏰 فيلات</button>
+        <button class="cat-btn" onclick="setCat('منازل')">🏡 منازل</button>
     </div>
-
     <div id="cloudFeed"></div>
-
-    <button class="publish-btn-main" id="mainPublishBtn" style="display:none;" onclick="openPublishModal(false)"></button>
 </div>
 
-<div id="publishModal" class="overlay" style="display:none; align-items:center; justify-content:center; z-index:10000;">
-    <div style="background:var(--card); width:90%; max-width:500px; padding:20px; border-radius:20px; max-height:90vh; overflow-y:auto;">
-        <h3 id="pubTitle" style="color:var(--p)">نشر منشور جديد</h3>
-        <select id="pType"><option value="شقق">شقة</option><option value="فيلات">فيلا</option></select>
+<!-- صفحة الخصوصية -->
+<div id="privacyPage" class="legal-page">
+    <button class="btn" onclick="showPage('home')" style="width:auto;">✕ إغلاق</button>
+    <h2>🛡️ سياسة الخصوصية</h2>
+    <p>نحن نلتزم بحماية بياناتك الشخصية. البيانات تستخدم فقط للتواصل بين المشتري والبائع. لا نشاركها لأطراف ثالثة.</p>
+</div>
+
+<!-- إخلاء المسؤولية -->
+<div id="disclaimerPage" class="legal-page">
+    <button class="btn" onclick="showPage('home')" style="width:auto;">✕ إغلاق</button>
+    <h2>⚠️ إخلاء المسؤولية</h2>
+    <p>الموقع وسيط فقط. نحن لا نتحقق من ملكية العقارات أو مصداقية المعلنين. أي تعاملات خارج الموقع تكون على مسؤوليتك.</p>
+</div>
+
+<!-- الشروط -->
+<div id="termsPage" class="legal-page">
+    <button class="btn" onclick="showPage('home')" style="width:auto;">✕ إغلاق</button>
+    <h2>⚖️ الشروط والقوانين</h2>
+    <p>1. يمنع نشر إعلانات مضللة أو صور غير لائقة.<br>2. يجب أن يكون المعلن صاحب الحق.<br>3. يحق للإدارة حذف أي منشور مخالف.</p>
+</div>
+
+<!-- تسجيل الدخول -->
+<div id="authPage" class="legal-page" style="display:block; text-align:center;">
+    <div style="max-width:400px; margin:auto; background:var(--card); padding:20px; border-radius:15px;">
+        <h3 id="authStatus">تسجيل الدخول</h3>
+        <input type="email" id="email" placeholder="البريد الإلكتروني">
+        <input type="password" id="pass" placeholder="كلمة المرور">
+        <button class="btn" onclick="handleAuth()">دخول الآن</button>
+    </div>
+</div>
+
+<!-- زر النشر الرئيسي -->
+<button class="publish-btn-main" id="mainPublishBtn" style="display:none;" onclick="togglePublishModal()"></button>
+
+<!-- نافذة النشر -->
+<div class="publish-modal" id="publishModal">
+    <div class="modal-content">
+        <h3 style="margin-top:0; color:var(--p)">نشر منشور جديد</h3>
+        <select id="pType"><option value="شقق">شقة</option><option value="فيلات">فيلا</option><option value="منازل">منزل</option></select>
         <input type="text" id="pTitle" placeholder="العنوان">
         <input type="number" id="pPrice" placeholder="السعر">
         <textarea id="pDesc" rows="4" placeholder="التفاصيل"></textarea>
         <input type="tel" id="pPhone" placeholder="رقم الهاتف">
-        <label class="btn" style="background:#333;"><input type="file" id="pFiles" multiple accept="image/*" onchange="handleFiles(this.files)" style="display:none;">📸 إضافة صور</label>
+        <label class="custom-file-upload"><input type="file" id="pFiles" multiple accept="image/*" onchange="handleFiles(this.files)" style="display:none;">📸 إضافة الصور</label>
         <div id="preGrid" style="display:flex; gap:5px; margin:10px 0; overflow-x:auto;"></div>
-        <button class="btn" onclick="uploadToFirebase()">نشر</button>
-        <button class="btn" style="background:#111;" onclick="closePublishModal()">إلغاء</button>
+        <div style="display:flex; gap:10px;"><button class="btn" onclick="uploadToFirebase()">نشر</button><button class="btn" style="background:#444;" onclick="togglePublishModal()">إلغاء</button></div>
     </div>
 </div>
 
+<!-- الشريط الجانبي -->
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 <div class="side-menu" id="sideMenu">
     <h3 style="color:var(--p)">DIABLO HUB</h3>
-    <div style="background:linear-gradient(45deg,#1a1a1a,#000); border:1px solid var(--gold); padding:10px; border-radius:10px; text-align:center;">
-        <p style="color:var(--gold); font-size:12px; margin:5px 0;">تميز الآن بـ 1$ فقط!</p>
-        <a href="https://wa.me/212695067840" target="_blank" style="text-decoration:none;"><button class="btn" style="background:#25d366; font-size:12px;">تواصل واتساب</button></a>
-    </div>
-    <div id="adminArea" style="display:none; margin-top:10px;">
-        <button class="btn" style="background:var(--gold); color:black;" onclick="openPublishModal(true)">✨ نشر مميز (أدمن)</button>
-    </div>
+    <button class="btn" onclick="showPage('home'); toggleMenu()">🏠 الرئيسية</button>
     <hr>
-    <button class="btn" onclick="auth.signOut().then(()=>location.reload())">تسجيل الخروج</button>
+    <button class="btn special-posts-btn" onclick="showPage('specialPosts'); toggleMenu()">⭐ منشورات مميزة</button>
+    <hr>
+    <button class="btn" style="background:#222;" onclick="showPage('privacy'); toggleMenu()">🛡️ الخصوصية</button>
+    <button class="btn" style="background:#222;" onclick="showPage('disclaimer'); toggleMenu()">⚠️ إخلاء المسؤولية</button>
+    <button class="btn" style="background:#222;" onclick="showPage('terms'); toggleMenu()">⚖️ الشروط</button>
+    <hr>
+    <button class="btn" style="background:red;" onclick="auth.signOut().then(()=>location.reload())">تسجيل الخروج</button>
 </div>
 
-<div class="overlay" id="mainOverlay" onclick="toggleMenu()"></div>
+<!-- صفحة المنشورات المميزة -->
+<div id="specialPosts" class="legal-page">
+    <button class="btn" onclick="showPage('home')" style="width:auto;">✕ إغلاق</button>
+    <h2 style="color:#ffbb00;">⭐ المنشورات المميزة</h2>
+    <div id="specialPostsContainer"></div>
+</div>
 
-<div id="diablo-bot-icon" style="position:fixed; bottom:20px; left:20px; width:60px; height:60px; background:var(--p); border-radius:50%; display:flex; align-items:center; justify-content:center; z-index:8000; cursor:pointer; font-size:24px;" onclick="toggleChat()">🤖</div>
+<!-- بوت الدردشة -->
+<div id="diablo-bot-icon" onclick="toggleChat()">🤖</div>
 <div id="bot-chat-window">
-    <div style="background:var(--p); padding:10px; color:white;">ديابلو بوت</div>
-    <div class="chat-area" id="chatArea"></div>
-    <div style="display:flex; padding:5px;"><input type="text" id="bot-input" style="flex:1;"><button onclick="sendBotMsg()" style="color:var(--p); background:none; border:none;">ارسل</button></div>
+    <div style="background:var(--p); padding:10px; color:white; display:flex; justify-content:space-between;">
+        <span>ديابلو بوت</span><span onclick="toggleChat()">✕</span>
+    </div>
+    <div id="chat-msgs" style="flex:1; padding:10px; overflow-y:auto; display:flex; flex-direction:column; gap:5px;"></div>
+    <div style="display:flex; padding:5px; border-top:1px solid var(--border);">
+        <input type="text" id="bot-input" style="flex:1; border:none; background:none; color:var(--t);" placeholder="اسألني...">
+        <button onclick="sendToBot()" style="border:none; background:none; color:var(--p);">إرسال</button>
+    </div>
 </div>
 
+<div class="ads-footer"></div>
+
+<!-- سكريبتات الموقع -->
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyCGWNteBBsejx6UISfvnTY1YmnQeom7vNg",
-        authDomain: "daiblosmart.firebaseapp.com",
-        projectId: "daiblosmart",
-        storageBucket: "daiblosmart.firebasestorage.app",
-        messagingSenderId: "948075676362",
-        appId: "1:948075676362:web:c27d582068712cbe13aa33"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth();
-    let currentUser = null, isAdmin = false, tempImgs = [], isPremiumPost = false, currentCat = 'الكل';
+const firebaseConfig = {
+    apiKey: "AIzaSyCGWNteBBsejx6UISfvnTY1YmnQeom7vNg",
+    authDomain: "daiblosmart.firebaseapp.com",
+    projectId: "daiblosmart",
+    storageBucket: "daiblosmart.firebasestorage.app",
+    messagingSenderId: "948075676362",
+    appId: "1:948075676362:web:c27d582068712cbe13aa33"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
+let tempImgs=[], currentCat='الكل', currentUser=null, isAdmin=false;
 
-    // مراقبة حالة المستخدم بدقة
-    auth.onAuthStateChanged(user => {
-        if(user) {
-            currentUser = user;
-            isAdmin = (user.email === "diablo@admin.com");
-            document.getElementById('authScreen').style.display = 'none';
-            document.getElementById('startScreen').style.display = 'flex';
-            if(isAdmin) document.getElementById('adminArea').style.display = 'block';
-            loadCloudData();
-        } else {
-            document.getElementById('authScreen').style.display = 'flex';
-            document.getElementById('mainApp').style.display = 'none';
-            document.getElementById('startScreen').style.display = 'none';
-        }
-    });
-
-    function handleAuth() {
-        const e = document.getElementById('email').value, p = document.getElementById('pass').value;
-        auth.signInWithEmailAndPassword(e, p).catch(() => auth.createUserWithEmailAndPassword(e, p));
+// مراقبة الدخول
+auth.onAuthStateChanged(user=>{
+    if(user){
+        currentUser=user;
+        if(user.email==="diablo@admin.com") isAdmin=true;
+        document.getElementById('authPage').style.display='none';
+        document.getElementById('startScreen').style.display='flex';
+        loadCloudData();
     }
+});
 
-    function setRole(role) {
-        document.getElementById('startScreen').style.display = 'none';
-        document.getElementById('mainApp').style.display = 'block';
-        if(role === 'seller') document.getElementById('mainPublishBtn').style.display = 'flex';
-    }
+// تسجيل الدخول
+function handleAuth(){
+    const e=document.getElementById('email').value, p=document.getElementById('pass').value;
+    if(e==="diablo@admin.com" && p!=="3505Ilyas2008"){ alert("كلمة سر الأدمن غير صحيحة!"); return; }
+    auth.signInWithEmailAndPassword(e,p).catch(()=>auth.createUserWithEmailAndPassword(e,p));
+}
 
-    function loadCloudData() {
-        db.collection("diablo_posts").orderBy("time", "desc").onSnapshot(snap => {
-            const feed = document.getElementById('cloudFeed'); feed.innerHTML = "";
-            snap.forEach(doc => {
-                const p = doc.data();
-                if(currentCat !== 'الكل' && p.type !== currentCat) return;
-                feed.innerHTML += `
-                    <div class="post-card ${p.isPremium ? 'premium' : ''}" data-title="${p.title.toLowerCase()}">
-                        ${p.isPremium ? '<span style="color:gold; font-size:11px;">✨ مميز</span>' : ''}
-                        <span class="price-tag">${p.price}$</span>
-                        <div style="display:flex; overflow-x:auto; gap:10px;">${p.imgs.map(i => `<img src="${i}" style="height:150px; border-radius:10px;">`).join('')}</div>
-                        <h3>${p.title}</h3>
-                        <p>${p.desc}</p>
-                        <a href="tel:${p.phone}" style="background:var(--p); color:white; padding:10px; border-radius:8px; text-decoration:none; display:block; text-align:center;">📞 اتصال</a>
-                    </div>`;
-            });
-        });
-    }
+// تحديد الدور
+function setRole(role){
+    document.getElementById('startScreen').style.display='none';
+    document.getElementById('homePageContent').style.display='block';
+    if(role==='seller') document.getElementById('mainPublishBtn').style.display='flex';
+}
 
-    function filterPosts() {
-        const query = document.getElementById('searchInput').value.toLowerCase();
-        document.querySelectorAll('.post-card').forEach(card => {
-            card.style.display = card.getAttribute('data-title').includes(query) ? 'block' : 'none';
-        });
-    }
-
-    function openPublishModal(premium) {
-        isPremiumPost = premium;
-        document.getElementById('pubTitle').innerText = premium ? "نشر مميز ✨" : "نشر جديد";
-        document.getElementById('publishModal').style.display = 'flex';
-    }
-    function closePublishModal() { document.getElementById('publishModal').style.display = 'none'; }
-
-    function handleFiles(files) {
-        Array.from(files).forEach(f => {
-            const r = new FileReader();
-            r.onload = e => {
-                const id = Date.now();
-                tempImgs.push({src: e.target.result, id: id});
-                document.getElementById('preGrid').innerHTML += `<div id="${id}" style="position:relative"><img src="${e.target.result}" style="width:50px;height:50px;"><button onclick="this.parentElement.remove()" style="position:absolute;top:0;right:0;background:red;color:white;border:none;">x</button></div>`;
-            };
-            r.readAsDataURL(f);
-        });
-    }
-
-    function uploadToFirebase() {
-        const t = document.getElementById('pTitle').value, d = document.getElementById('pDesc').value, ph = document.getElementById('pPhone').value, pr = document.getElementById('pPrice').value, tp = document.getElementById('pType').value;
-        db.collection("diablo_posts").add({
-            title: t, desc: d, phone: ph, price: pr, type: tp, 
-            imgs: tempImgs.map(i => i.src), time: Date.now(), isPremium: isPremiumPost, userId: currentUser.uid
-        }).then(() => location.reload());
-    }
-
-    function toggleChat() {
-        const w = document.getElementById('bot-chat-window');
-        w.style.display = (w.style.display === 'flex') ? 'none' : 'flex';
-        if(w.style.display === 'flex' && document.getElementById('chatArea').innerHTML === "") {
-            addMsg("مرحباً! أنا ديابلو بوت 🤖. يمكنك النشر عبر زر (+) أو طلب التميز من القائمة الجانبية!", 'bot');
-        }
-    }
-    function addMsg(t, s) {
-        const d = document.createElement('div'); d.innerText = t;
-        d.style.background = s === 'bot' ? '#222' : var(--p);
-        d.style.padding = '8px'; d.style.borderRadius = '10px'; d.style.alignSelf = s === 'bot' ? 'flex-start' : 'flex-end';
-        document.getElementById('chatArea').appendChild(d);
-    }
-    function sendBotMsg() { const i = document.getElementById('bot-input'); if(i.value) { addMsg(i.value, 'user'); i.value = ""; setTimeout(()=>addMsg("فهمتك! هل تود معرفة المزيد عن العقارات المتاحة؟", 'bot'), 1000); } }
-
-    function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('mainOverlay').style.display = (document.getElementById('mainOverlay').style.display === 'block') ? 'none' : 'block'; }
-    function toggleTheme() { document.body.classList.toggle('light-mode'); }
-    function setCat(c) { currentCat = c; document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active')); event.target.classList.add('active'); loadCloudData(); }
-</script>
-</body>
-    </html>
-    
+// تحميل المنشورات العادية
+function loadCloudData(){
+    db.collection("diablo_posts").orderBy("time","desc").onSnapshot(snap=>{
+        const feed=document.getElementById('cloudFeed'); feed.innerHTML="";
+        snap.forEach(doc=>{
+            const p=doc.data();
+            if(currentCat!=='الكل' && p.type!==currentCat) return;
+            const showDelete=isAdmin || (currentUser && p.userId===currentUser.uid);
+            feed.innerHTML+=`
+            <div class="post-card">
+                <span class="price-tag">${p.price}$</span>
+                <div style="display:flex; overflow-x:auto; gap:10px;">${p.imgs.map(i=>`<img src="${i}" style="height:150px;border-radius:
