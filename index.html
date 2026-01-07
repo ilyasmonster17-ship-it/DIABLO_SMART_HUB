@@ -4,50 +4,61 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Diablo Hub | New Generation</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+
 <style>
-:root { --p:#ff4500; --bg:#050505; --card:#111; --t:#fff; --border:#222; --gold:#ffd700; }
-.light-mode { --bg:#f5f5f5; --card:#fff; --t:#222; --border:#ddd; }
-body { margin:0; padding-bottom:100px; font-family:'Cairo',sans-serif; background:var(--bg); color:var(--t); overflow-x:hidden; }
-header{padding:15px 5%; display:flex; justify-content:space-between; align-items:center; background:var(--card); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:1000;}
-.search-bar{flex:1; display:flex; background:var(--bg); border:1px solid var(--border); border-radius:20px; padding:5px 15px; margin:0 10px;}
-.search-bar input{border:none; background:none; color:var(--t); outline:none; width:100%; font-size:14px;}
-.categories{display:flex; overflow-x:auto; gap:10px; padding:10px 5%; white-space:nowrap;}
-.cat-btn{background:var(--card); border:1px solid var(--border); color:var(--t); padding:8px 15px; border-radius:20px; cursor:pointer;}
-.cat-btn.active{background:var(--p); border-color:var(--p); color:white;}
-.publish-btn-main{position:fixed; bottom:30px; left:50%; transform:translateX(-50%); width:50px; height:40px; background:linear-gradient(90deg,#00f2ea 0%,#ff0050 100%); border-radius:12px; display:none; align-items:center; justify-content:center; z-index:9000; cursor:pointer; border:none;}
-.publish-btn-main::after{content:'+'; color:black; font-size:25px; font-weight:bold; background:white; width:25px; height:25px; border-radius:5px; display:flex; align-items:center; justify-content:center;}
-.post-card{background:var(--card); border:1px solid var(--border); border-radius:15px; margin:15px 5%; padding:15px; position:relative;}
-.post-card.premium{border:2px solid var(--gold); box-shadow:0 0 15px rgba(255,215,0,0.2);}
-.price-tag{position:absolute; top:10px; left:10px; background:#25d366; color:white; padding:3px 12px; border-radius:20px; font-weight:bold;}
-.side-menu{position:fixed; top:0; right:-100%; width:280px; height:100%; background:var(--card); z-index:9500; transition:0.4s; padding:20px; box-sizing:border-box;}
-.side-menu.active{right:0;}
-.overlay{position:fixed; inset:0; background:rgba(0,0,0,0.8); display:none; z-index:9400;}
-.btn{background:var(--p); color:white; border:none; padding:12px; border-radius:8px; cursor:pointer; font-weight:bold; width:100%; margin-top:10px; text-align:center; text-decoration:none; display:block;}
-input,textarea,select{width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px solid var(--border); background:var(--bg); color:var(--t); box-sizing:border-box;}
-#bot-chat-window{position:fixed; bottom:90px; left:20px; width:300px; height:400px; background:var(--card); border:1px solid var(--p); border-radius:15px; display:none; flex-direction:column; z-index:9999;}
-.chat-area{flex:1; padding:10px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;}
-.msg{padding:8px 12px; border-radius:10px; max-width:80%; font-size:13px;}
-.msg.bot{background:#222; align-self:flex-start;}
-.msg.user{background:var(--p); align-self:flex-end;}
-.request-card{background:var(--card); border:2px solid var(--p); border-radius:15px; margin:10px 5%; padding:12px; position:relative;}
+:root { --p: #ff4500; --bg: #050505; --card: #111; --t: #fff; --border: #222; --gold: #ffd700; }
+.light-mode { --bg: #f5f5f5; --card: #fff; --t: #222; --border: #ddd; }
+body { background:var(--bg); color:var(--t); font-family:'Cairo',sans-serif; margin:0; padding-bottom:100px; overflow-x:hidden; }
+#startScreen { display:flex; position:fixed; inset:0; background:var(--bg); z-index:9999; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px; }
+#mainApp { display:none; }
+header { padding:15px 5%; display:flex; justify-content:space-between; align-items:center; background:var(--card); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:1000; }
+.search-bar { flex:1; display:flex; background:var(--bg); border:1px solid var(--border); border-radius:20px; padding:5px 15px; margin:0 10px; }
+.search-bar input { border:none; background:none; color:var(--t); outline:none; width:100%; font-size:14px; }
+.categories { display:flex; overflow-x:auto; gap:10px; padding:10px 5%; white-space:nowrap; }
+.cat-btn { background:var(--card); border:1px solid var(--border); color:var(--t); padding:8px 15px; border-radius:20px; cursor:pointer; }
+.cat-btn.active { background:var(--p); border-color:var(--p); color:white; }
+.publish-btn-main { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); width:50px; height:40px; background:linear-gradient(90deg,#00f2ea 0%,#ff0050 100%); border-radius:12px; display:none; align-items:center; justify-content:center; z-index:9000; cursor:pointer; border:none; }
+.publish-btn-main::after { content:'+'; color:black; font-size:25px; font-weight:bold; background:white; width:25px; height:25px; border-radius:5px; display:flex; align-items:center; justify-content:center; }
+.post-card { background:var(--card); border:1px solid var(--border); border-radius:15px; margin:15px 5%; padding:15px; position:relative; }
+.post-card.premium { border:2px solid var(--gold); box-shadow:0 0 15px rgba(255,215,0,0.2); }
+.price-tag { position:absolute; top:10px; left:10px; background:#25d366; color:white; padding:3px 12px; border-radius:20px; font-weight:bold; }
+.side-menu { position:fixed; top:0; right:-100%; width:300px; height:100%; background:var(--card); z-index:9500; transition:0.4s; padding:20px; box-sizing:border-box; overflow-y:auto; }
+.side-menu.active { right:0; }
+.overlay { position:fixed; inset:0; background:rgba(0,0,0,0.8); display:none; z-index:9400; }
+.btn { background:var(--p); color:white; border:none; padding:12px; border-radius:8px; cursor:pointer; font-weight:bold; width:100%; margin-top:10px; text-align:center; text-decoration:none; display:block; }
+input,textarea,select { width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px solid var(--border); background:var(--bg); color:var(--t); box-sizing:border-box; }
+#bot-chat-window { position:fixed; bottom:90px; left:20px; width:300px; height:400px; background:var(--card); border:1px solid var(--p); border-radius:15px; display:none; flex-direction:column; z-index:9999; }
+.chat-area { flex:1; padding:10px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; }
+.msg { padding:8px 12px; border-radius:10px; max-width:80%; font-size:13px; word-wrap:break-word; }
+.msg.bot { background:#222; align-self:flex-start; }
+.msg.user { background:var(--p); align-self:flex-end; }
+#premiumPage,#requestPage { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:10001; align-items:center; justify-content:center; padding:20px; overflow-y:auto; }
+#premiumPage .content,#requestPage .content { background:var(--card); padding:20px; border-radius:15px; max-width:500px; width:100%; }
+
+@media (max-width:600px){
+    .publish-btn-main { width:40px; height:35px; bottom:20px; }
+    header{padding:10px 3%;}
+}
 </style>
 </head>
 <body>
+
 <div id="startScreen">
-<h1 style="color:var(--p);">DIABLO HUB</h1>
+<h1 style="color:var(--p); margin-bottom:5px;">DIABLO HUB</h1>
 <p style="font-size:14px; opacity:0.8;">أهلاً بك في أقوى منصة عقارية</p>
 <div style="width:100%; max-width:300px; margin-top:20px;">
-<button class="btn" onclick="setRole('investor')">أنا مستثمر</button>
-<button class="btn" style="background:#222; border:1px solid var(--p);" onclick="setRole('seller')">أنا مالك</button>
+    <button class="btn" onclick="setRole('investor')">أنا مستثمر</button>
+    <button class="btn" style="background:#222; border:1px solid var(--p);" onclick="setRole('seller')">أنا مالك</button>
 </div>
 </div>
 
-<div id="mainApp" style="display:none;">
+<div id="mainApp">
 <header>
 <button onclick="toggleMenu()" style="background:none; border:none; color:var(--p); font-size:24px;">☰</button>
 <div class="search-bar"><input type="text" id="searchInput" placeholder="ابحث عن منزل، شقة..." oninput="filterPosts()"></div>
@@ -63,46 +74,42 @@ input,textarea,select{width:100%; padding:12px; margin:8px 0; border-radius:8px;
 </div>
 
 <div id="cloudFeed"></div>
-<div id="requestFeed"></div>
 <button class="publish-btn-main" id="mainPublishBtn" onclick="openPublishModal(false)"></button>
 </div>
 
+<!-- نموذج النشر -->
 <div id="publishModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:10000; align-items:center; justify-content:center; padding:20px;">
 <div style="background:var(--card); width:100%; max-width:500px; padding:20px; border-radius:20px; max-height:90vh; overflow-y:auto;">
 <h3 id="modalTitle" style="color:var(--p)">نشر عقار جديد</h3>
 <select id="pType"><option value="شقق">شقة</option><option value="فيلات">فيلا</option><option value="منازل">منزل</option></select>
-<input type="text" id="pTitle" placeholder="عنوان العقار">
+<input type="text" id="pTitle" placeholder="عنوان العقار (مثال: شقة فاخرة للبيع)">
 <input type="number" id="pPrice" placeholder="السعر بالدولار">
 <textarea id="pDesc" rows="4" placeholder="اكتب تفاصيل العقار هنا..."></textarea>
-<input type="tel" id="pPhone" placeholder="رقم الهاتف">
-<label class="btn" style="background:#333; cursor:pointer;"><input type="file" id="pFiles" multiple accept="image/*" style="display:none;" onchange="handleFiles(this.files)">📸 اختر صور العقار</label>
+<select id="pCity">
+<option value="">اختر المدينة</option>
+<option>مراكش</option><option>الدار البيضاء</option><option>الرباط</option><option>فاس</option><option>طنجة</option><option>أكادير</option>
+<option>وجدة</option><option>مكناس</option><option>تطوان</option><option>القنيطرة</option>
+</select>
+<label class="btn" style="background:#333; cursor:pointer;">
+<input type="file" id="pFiles" multiple accept="image/*" style="display:none;" onchange="handleFiles(this.files)">📸 اختر صور العقار
+</label>
 <div id="preGrid" style="display:flex; gap:10px; margin:10px 0; overflow-x:auto;"></div>
 <button class="btn" onclick="uploadToFirebase()">نشر الإعلان الآن</button>
 <button class="btn" style="background:#111;" onclick="closePublishModal()">إلغاء</button>
 </div>
 </div>
 
-<!-- نافذة الطلبات -->
-<div id="requestModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:10001; align-items:center; justify-content:center; padding:20px;">
-<div style="background:var(--card); width:100%; max-width:500px; padding:20px; border-radius:20px; max-height:90vh; overflow-y:auto;">
-<h3 style="color:var(--gold)">أضف طلبك ✨</h3>
-<select id="rType"><option value="شقق">شقة</option><option value="فيلات">فيلا</option><option value="منازل">منزل</option></select>
-<input type="number" id="rPrice" placeholder="السعر بالدولار">
-<input type="text" id="rCity" placeholder="اختر المدينة">
-<input type="text" id="rExtras" placeholder="إضافات مثل مسبح أو قرب البحر">
-<input type="tel" id="rPhone" placeholder="رقم الهاتف (يظل مخفي)">
-<button class="btn" onclick="addRequest()">أضف الطلب</button>
-<button class="btn" style="background:#111;" onclick="closeRequestModal()">إلغاء</button>
-</div>
-</div>
-
+<!-- الشريط الجانبي -->
 <div class="side-menu" id="sideMenu">
 <h2 style="color:var(--p)">DIABLO HUB</h2>
-<hr style="border:0; border-top:1px solid #333; margin:20px 0;">
+<hr>
+<button class="btn" onclick="showRequestPage()">📋 الطلبات</button>
+<hr>
 <button class="btn" onclick="location.reload()">🏠 الصفحة الرئيسية</button>
-<button class="btn" onclick="openRequestModal()">📩 الطلبات</button>
-<button class="btn" onclick="showPrivacy()">سياسات الخصوصية</button>
+<a href="https://wa.me/212695067840" target="_blank" class="btn" style="background:#25d366;"><i class="fab fa-whatsapp"></i> واتساب</a>
+<a href="#" class="btn" onclick="alert('سياسات الخصوصية ...')">📄 سياسات الخصوصية</a>
 </div>
+
 <div class="overlay" id="mainOverlay" onclick="toggleMenu()"></div>
 
 <div id="botIcon" style="position:fixed; bottom:20px; left:20px; width:60px; height:60px; background:var(--p); border-radius:50%; display:flex; align-items:center; justify-content:center; z-index:9000; cursor:pointer; font-size:24px; box-shadow:0 0 15px var(--p);" onclick="toggleChat()">🤖</div>
@@ -115,30 +122,58 @@ input,textarea,select{width:100%; padding:12px; margin:8px 0; border-radius:8px;
 </div>
 </div>
 
+<!-- صفحة المنشورات المميزة -->
+<div id="premiumPage">
+<div class="content">
+<h3 style="color:var(--gold)">المنشورات المميزة ✨</h3>
+<p>يمكنك جعل منشورك مميزاً مقابل 1$–2$، ليظهر بلون خاص ويحصل على انتشار سريع.</p>
+<button class="btn" onclick="closePremiumPage()">إغلاق</button>
+</div>
+</div>
+
+<!-- صفحة الطلبات -->
+<div id="requestPage">
+<div class="content">
+<h3 style="color:var(--gold)">الطلبات 📋</h3>
+<select id="rType"><option value="شقق">شقة</option><option value="فيلات">فيلا</option><option value="منازل">منزل</option></select>
+<input type="number" id="rPrice" placeholder="السعر بالدولار">
+<select id="rCity"><option value="">اختر المدينة</option>
+<option>مراكش</option><option>الدار البيضاء</option><option>الرباط</option><option>فاس</option><option>طنجة</option>
+<option>أكادير</option><option>وجدة</option><option>مكناس</option><option>تطوان</option><option>القنيطرة</option>
+</select>
+<input type="text" id="rExtras" placeholder="إضافات مثل مسبح، بجانب البحر، موقف سيارات...">
+<button class="btn" onclick="addRequest()">إضافة الطلب</button>
+<button class="btn" style="background:#111;" onclick="closeRequestPage()">إغلاق</button>
+<div id="requestList" style="margin-top:10px;"></div>
+</div>
+</div>
+
 <script>
-const firebaseConfig = { apiKey:"AIzaSyCGWNteBBsejx6UISfvnTY1YmnQeom7vNg", authDomain:"daiblosmart.firebaseapp.com", projectId:"daiblosmart", storageBucket:"daiblosmart.firebasestorage.app"};
+const firebaseConfig = { apiKey:"AIzaSyCGWNteBBsejx6UISfvnTY1YmnQeom7vNg", authDomain:"daiblosmart.firebaseapp.com", projectId:"daiblosmart", storageBucket:"daiblosmart.firebasestorage.app" };
 firebase.initializeApp(firebaseConfig);
-const db=firebase.firestore();
-const auth=firebase.auth();
+const db=firebase.firestore(); const auth=firebase.auth();
 let currentUser=null,tempImgs=[],isPremiumPost=false,currentCat='الكل';
+auth.onAuthStateChanged(u=>{if(u) currentUser=u;});
 
-auth.onAuthStateChanged(u=>{if(u)currentUser=u;});
+function setRole(role){ document.getElementById('startScreen').style.display='none'; document.getElementById('mainApp').style.display='block'; if(role==='seller') document.getElementById('mainPublishBtn').style.display='flex'; loadCloudData(); loadRequests(); }
+function toggleMenu(){ document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('mainOverlay').style.display=(document.getElementById('mainOverlay').style.display==='block')?'none':'block'; }
+function toggleTheme(){ document.body.classList.toggle('light-mode'); }
+function setCat(c){ currentCat=c; document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active')); event.target.classList.add('active'); loadCloudData(); }
 
-function setRole(role){document.getElementById('startScreen').style.display='none';document.getElementById('mainApp').style.display='block';if(role==='seller')document.getElementById('mainPublishBtn').style.display='flex';loadCloudData();loadRequests();}
-function loadCloudData(){db.collection("diablo_posts").orderBy("isPremium","desc").orderBy("time","desc").onSnapshot(snap=>{const feed=document.getElementById('cloudFeed');feed.innerHTML="";snap.forEach(doc=>{const p=doc.data();if(currentCat!=='الكل'&&p.type!==currentCat)return;let delBtn=(currentUser&&currentUser.uid===p.userId)?`<button class='btn' style='background:red;margin-top:5px;' onclick='deletePost("${doc.id}")'>حذف المنشور</button>`:'';feed.innerHTML+=`<div class='post-card ${p.isPremium?'premium':''}' data-title='${p.title.toLowerCase()}'>${p.isPremium?'<span style="color:gold; font-size:10px; font-weight:bold;">✨ إعلان مميز</span>':''}<span class='price-tag'>${p.price}$</span><div style='display:flex; overflow-x:auto; gap:10px;'>${p.imgs.map(i=>`<img src='${i}' style='height:150px;border-radius:10px;'>`).join('')}</div><h3>${p.title}</h3><p style='font-size:13px;opacity:0.8;'>${p.desc}</p><a href='tel:${p.phone}' class='btn'>📞 اتصل بالمالك</a>${delBtn}</div>`;});});}
+function loadCloudData(){
+    db.collection("diablo_posts").orderBy("isPremium","desc").orderBy("time","desc").onSnapshot(snap=>{
+    const feed=document.getElementById('cloudFeed'); feed.innerHTML="";
+    snap.forEach(doc=>{
+        const p=doc.data();
+        if(currentCat!=='الكل'&&p.type!==currentCat) return;
+        let delBtn=(currentUser&&currentUser.uid===p.userId)?`<button class='btn' style='background:red;margin-top:5px;' onclick='deletePost("${doc.id}")'>حذف المنشور</button>`:'';
+        feed.innerHTML+=`<div class='post-card ${p.isPremium?'premium':''}' data-title='${p.title.toLowerCase()}'>${p.isPremium?'<span style="color:gold; font-size:10px; font-weight:bold;">✨ إعلان مميز</span>':''}<span class='price-tag'>${p.price}$</span><div style='display:flex; overflow-x:auto; gap:10px;'>${p.imgs.map(i=>`<img src='${i}' style='height:150px;border-radius:10px;'>`).join('')}</div><h3>${p.title}</h3><p style='font-size:13px;opacity:0.8;'>${p.desc}</p><a href='tel:${p.phone}' class='btn'>📞 اتصل بالمالك</a>${delBtn}</div>`;
+    });
+    });
+}
+function deletePost(id){ db.collection("diablo_posts").doc(id).delete(); }
+function filterPosts(){ const q=document.getElementById('searchInput').value.toLowerCase(); document.querySelectorAll('.post-card').forEach(c=>{ c.style.display=c.getAttribute('data-title').includes(q)?'block':'none'; }); }
 
-function deletePost(id){db.collection("diablo_posts").doc(id).delete();}
-function filterPosts(){const q=document.getElementById('searchInput').value.toLowerCase();document.querySelectorAll('.post-card').forEach(c=>{c.style.display=c.getAttribute('data-title').includes(q)?'block':'none';});}
-
-function handleFiles(files){Array.from(files).forEach(f=>{const r=new FileReader();r.onload=e=>{const id=Date.now();tempImgs.push({src:e.target.result,id:id});document.getElementById('preGrid').innerHTML+=`<div id='${id}' style='position:relative;'><img src='${e.target.result}' style='width:60px;height:60px;border-radius:5px;'><button onclick='removeImg(${id})' style='position:absolute;top:0;right:0;background:red;color:white;border:none;border-radius:50%;width:20px;height:20px;'>✕</button></div>`};r.readAsDataURL(f);});}
-function removeImg(id){tempImgs=tempImgs.filter(i=>i.id!=id);document.getElementById(id).remove();}
-function uploadToFirebase(){const t=document.getElementById('pTitle').value,d=document.getElementById('pDesc').value,ph=document.getElementById('pPhone').value,pr=document.getElementById('pPrice').value,tp=document.getElementById('pType').value;if(!t||tempImgs.length===0)return alert("يرجى ملء العنوان وإضافة صورة واحدة على الأقل!");let uid=currentUser?currentUser.uid:'guest';db.collection("diablo_posts").add({title:t,desc:d,phone:ph,price:pr,type:tp,imgs:tempImgs.map(i=>i.src),time:Date.now(),isPremium:isPremiumPost,userId:uid}).then(()=>location.reload());}
-
-function toggleMenu(){document.getElementById('sideMenu').classList.toggle('active');document.getElementById('mainOverlay').style.display=(document.getElementById('mainOverlay').style.display==='block')?'none':'block';}
-function toggleTheme(){document.body.classList.toggle('light-mode');}
-function setCat(c){currentCat=c;document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');loadCloudData();}
-
-function toggleChat(){const w=document.getElementById('bot-chat-window');w.style.display=(w.style.display==='flex')?'none':'flex';}
-function sendBotMsg(){const input=document.getElementById('bot-input').value.trim();if(!input)return;const area=document.getElementById('chatArea');area.innerHTML+=`<div class='msg user'>${input}</div>`;const responses=[];for(let i=1;i<=3500;i++)responses.push(`رد منطقي رقم ${i} حسب السؤال: ${input}`);const reply=responses[Math.floor(Math.random()*responses.length)];area.innerHTML+=`<div class='msg bot'>${reply}</div>`;document.getElementById('bot-input').value='';area.scrollTop=area.scrollHeight;}
-
-function openPublishModal(premium){isPremiumPost=premium;document.getElementById('modalTitle').innerText=premium?"نشر منش
+function openPublishModal(premium){ isPremiumPost=premium; document.getElementById('modalTitle').innerText=premium?"نشر منشور مميز ✨":"نشر عقار جديد"; document.getElementById('publishModal').style.display='flex'; }
+function closePublishModal(){ document.getElementById('publishModal').style.display='none'; }
+function handleFiles(files){ Array.from(files).forEach(f=>{ const r=new FileReader(); r.onload=e=>{ const id=Date.now(); tempImgs.push({src:e.target.result,id:id}); document.getElementById('preGrid').innerHTML+=`<div id='${id}' style='position:relative;'><img src='${e.target.result}' style='width:60px;height:60px;border-radius:5px;'><button onclick='removeImg(${id})' style='position:absolute;top:0;right:0;background:red;color:white;border:none;border-radius:50%;width:20px;height:20px;'>✕</button></div>`; }; r.readAs
