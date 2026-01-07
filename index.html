@@ -2,58 +2,53 @@
 <html lang="ar" dir="rtl" id="diablo-app">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Diablo Hub | Pro & Secure Edition</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
 
 <style>
 :root { --p: #ff4500; --bg: #050505; --card: #111; --t: #fff; --border: #222; }
 .light-mode { --bg: #f5f5f5; --card: #fff; --t: #222; --border: #ddd; }
-body { background: var(--bg); color: var(--t); font-family: 'Cairo', sans-serif; margin:0; padding-bottom:120px; transition:0.3s; }
-header { padding:15px 5%; display:flex; justify-content:space-between; align-items:center; background:var(--card); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:1000; gap:10px; }
-.search-bar { flex:1; display:flex; background:var(--bg); border:1px solid var(--border); border-radius:20px; padding:5px 15px; }
+body { background: var(--bg); color: var(--t); font-family: 'Cairo', sans-serif; margin: 0; padding-bottom: 120px; transition: 0.3s; }
+header { padding: 15px 5%; display:flex; justify-content:space-between; align-items:center; background: var(--card); border-bottom:1px solid var(--border); position: sticky; top:0; z-index:1000; gap:10px; }
+.search-bar { flex:1; display:flex; background: var(--bg); border:1px solid var(--border); border-radius:20px; padding:5px 15px; }
 .search-bar input { border:none; background:none; color:var(--t); outline:none; width:100%; font-size:14px; }
+
 .categories { display:flex; overflow-x:auto; gap:10px; padding:10px 5%; white-space:nowrap; }
-.cat-btn { background: var(--card); border:1px solid var(--border); color:var(--t); padding:8px 20px; border-radius:20px; cursor:pointer; font-size:13px; }
+.cat-btn { background:var(--card); border:1px solid var(--border); color:var(--t); padding:8px 20px; border-radius:20px; cursor:pointer; font-size:13px; }
 .cat-btn.active { background: var(--p); border-color: var(--p); color:white; }
-.publish-btn-main { position:fixed; bottom:95px; left:50%; transform:translateX(-50%); width:60px; height:45px; background:linear-gradient(90deg,#00f2ea 0%,#ff0050 100%); border-radius:12px; display:flex; align-items:center; justify-content:center; z-index:4500; cursor:pointer; border:none; box-shadow:0 0 15px rgba(0,0,0,0.5);}
-.publish-btn-main::after { content:'+'; color:black; font-size:30px; font-weight:bold; background:white; width:30px; height:30px; border-radius:5px; display:flex; align-items:center; justify-content:center;}
+
+.publish-btn-main { position: fixed; bottom: 95px; left: 50%; transform: translateX(-50%); width: 60px; height: 45px; background: linear-gradient(90deg, #00f2ea 0%, #ff0050 100%); border-radius: 12px; display:flex; align-items:center; justify-content:center; z-index:4500; cursor:pointer; border:none; box-shadow:0 0 15px rgba(0,0,0,0.5);}
+.publish-btn-main::after { content:'+'; color:black; font-size:30px; font-weight:bold; background:white; width:30px; height:30px; border-radius:5px; display:flex; align-items:center; justify-content:center; }
+
 .publish-modal { position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:7000; display:none; align-items:center; justify-content:center; padding:20px; }
-.modal-content { background: var(--card); width:100%; max-width:500px; border-radius:20px; padding:20px; position:relative; max-height:90vh; overflow-y:auto; }
+.modal-content { background:var(--card); width:100%; max-width:500px; border-radius:20px; padding:20px; position:relative; max-height:90vh; overflow-y:auto; }
+
 .custom-file-upload { display:inline-block; padding:20px; background:#1a1a1a; border:2px dashed var(--p); border-radius:15px; cursor:pointer; text-align:center; width:100%; box-sizing:border-box; color:var(--p); }
+
 .post-card { background: var(--card); border:1px solid var(--border); border-radius:15px; margin:0 5% 20px 5%; padding:15px; position:relative; border-right:4px solid var(--p); }
 .price-tag { position:absolute; top:10px; left:10px; background:#25d366; color:white; padding:3px 12px; border-radius:20px; font-weight:bold; font-size:14px; }
-#diablo-bot-icon { position:fixed; bottom:20px; left:20px; width:60px; height:60px; background:var(--p); border-radius:50%; display:flex; align-items:center; justify-content:center; z-index:5500; cursor:pointer; border:2px solid white; font-size:24px; }
+
+#diablo-bot-icon { position:fixed; bottom:20px; left:20px; width:60px; height:60px; background: var(--p); border-radius:50%; display:flex; align-items:center; justify-content:center; z-index:5500; cursor:pointer; border:2px solid white; font-size:24px; }
 #bot-chat-window { position:fixed; bottom:90px; left:20px; width:300px; height:400px; background:var(--card); border:1px solid var(--p); border-radius:15px; display:none; flex-direction:column; z-index:6000; }
+
 .side-menu { position:fixed; top:0; right:-100%; width:280px; height:100%; background:var(--card); z-index:8000; transition:0.4s; padding:20px; overflow-y:auto; }
 .side-menu.active { right:0; }
 .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.8); display:none; z-index:7500; }
+
 .legal-page { display:none; padding:20px; line-height:1.6; }
-.btn { background: var(--p); color:white; border:none; padding:12px; border-radius:8px; cursor:pointer; font-weight:bold; width:100%; margin-top:10px; }
+.btn { background:var(--p); color:white; border:none; padding:12px; border-radius:8px; cursor:pointer; font-weight:bold; width:100%; margin-top:10px; }
 input, textarea, select { width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px solid var(--border); background:var(--bg); color:var(--t); box-sizing:border-box; }
+
 .ads-footer { position:fixed; bottom:0; left:0; width:100%; height:85px; background:#000; border-top:2px solid var(--p); display:flex; justify-content:space-around; align-items:center; z-index:4000; }
 
-/* لون جذاب لقسم المنشورات المميزة */
-.special-posts-btn { background: linear-gradient(90deg, #ffcc00, #ff7700); color: black; }
-.special-posts-btn:hover { filter: brightness(1.2); }
-
+.featured-btn { background: gold; color:black; font-weight:bold; border:none; border-radius:15px; padding:10px 15px; cursor:pointer; margin-bottom:10px; }
 </style>
 </head>
 <body>
 
-<!-- شاشة اختيار المستثمر / المالك -->
-<div id="startScreen" style="position:fixed; inset:0; background:var(--bg); z-index:9500; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px;">
-    <h1 style="color:var(--p)">مرحباً بك في ديابلو هب</h1>
-    <p>اختر صفتك للمتابعة:</p>
-    <button class="btn" style="max-width:300px;" onclick="setRole('investor')">أنا مستثمر (أبحث عن عقار)</button>
-    <button class="btn" style="max-width:300px; background:#222; border:1px solid var(--p);" onclick="setRole('seller')">أنا مالك (أريد النشر)</button>
-</div>
-
-<!-- الهيدر -->
 <header>
     <button onclick="toggleMenu()" style="background:none; border:none; color:var(--p); font-size:24px;">☰</button>
     <div class="search-bar">
@@ -62,104 +57,70 @@ input, textarea, select { width:100%; padding:12px; margin:8px 0; border-radius:
     <button onclick="toggleTheme()" style="background:none; border:1px solid var(--p); color:var(--p); border-radius:20px; padding:4px 10px; font-size:12px;">MODE</button>
 </header>
 
-<!-- محتوى الصفحة الرئيسية -->
-<div id="homePageContent">
-    <div class="categories">
-        <button class="cat-btn active" onclick="setCat('الكل')">الكل</button>
-        <button class="cat-btn" onclick="setCat('شقق')">🏙️ شقق</button>
-        <button class="cat-btn" onclick="setCat('فيلات')">🏰 فيلات</button>
-        <button class="cat-btn" onclick="setCat('منازل')">🏡 منازل</button>
-    </div>
-    <div id="cloudFeed"></div>
+<div class="categories">
+    <button class="cat-btn active" onclick="setCat('الكل')">الكل</button>
+    <button class="cat-btn" onclick="setCat('شقق')">🏙️ شقق</button>
+    <button class="cat-btn" onclick="setCat('فيلات')">🏰 فيلات</button>
+    <button class="cat-btn" onclick="setCat('منازل')">🏡 منازل</button>
+    <button class="cat-btn featured-btn" onclick="setCat('مميز')">⭐ المنشورات المميزة</button>
 </div>
 
-<!-- صفحة الخصوصية -->
-<div id="privacyPage" class="legal-page">
-    <button class="btn" onclick="showPage('home')" style="width:auto;">✕ إغلاق</button>
-    <h2>🛡️ سياسة الخصوصية</h2>
-    <p>نحن نلتزم بحماية بياناتك الشخصية. البيانات تستخدم فقط للتواصل بين المشتري والبائع. لا نشاركها لأطراف ثالثة.</p>
-</div>
+<div id="cloudFeed"></div>
 
-<!-- إخلاء المسؤولية -->
-<div id="disclaimerPage" class="legal-page">
-    <button class="btn" onclick="showPage('home')" style="width:auto;">✕ إغلاق</button>
-    <h2>⚠️ إخلاء المسؤولية</h2>
-    <p>الموقع وسيط فقط. نحن لا نتحقق من ملكية العقارات أو مصداقية المعلنين. أي تعاملات خارج الموقع تكون على مسؤوليتك.</p>
-</div>
-
-<!-- الشروط -->
-<div id="termsPage" class="legal-page">
-    <button class="btn" onclick="showPage('home')" style="width:auto;">✕ إغلاق</button>
-    <h2>⚖️ الشروط والقوانين</h2>
-    <p>1. يمنع نشر إعلانات مضللة أو صور غير لائقة.<br>2. يجب أن يكون المعلن صاحب الحق.<br>3. يحق للإدارة حذف أي منشور مخالف.</p>
-</div>
-
-<!-- تسجيل الدخول -->
-<div id="authPage" class="legal-page" style="display:block; text-align:center;">
-    <div style="max-width:400px; margin:auto; background:var(--card); padding:20px; border-radius:15px;">
-        <h3 id="authStatus">تسجيل الدخول</h3>
-        <input type="email" id="email" placeholder="البريد الإلكتروني">
-        <input type="password" id="pass" placeholder="كلمة المرور">
-        <button class="btn" onclick="handleAuth()">دخول الآن</button>
-    </div>
-</div>
-
-<!-- زر النشر الرئيسي -->
-<button class="publish-btn-main" id="mainPublishBtn" style="display:none;" onclick="togglePublishModal()"></button>
-
-<!-- نافذة النشر -->
+<!-- نشر منشور -->
+<button class="publish-btn-main" id="mainPublishBtn" onclick="togglePublishModal()"></button>
 <div class="publish-modal" id="publishModal">
     <div class="modal-content">
         <h3 style="margin-top:0; color:var(--p)">نشر منشور جديد</h3>
-        <select id="pType"><option value="شقق">شقة</option><option value="فيلات">فيلا</option><option value="منازل">منزل</option></select>
+        <select id="pType"><option value="شقق">شقة</option><option value="فيلات">فيلا</option><option value="منازل">منزل</option><option value="مميز">منشور مميز</option></select>
         <input type="text" id="pTitle" placeholder="العنوان">
-        <input type="number" id="pPrice" placeholder="السعر">
+        <input type="number" id="pPrice" placeholder="السعر ($1-$5 للمنشورات المميزة)">
         <textarea id="pDesc" rows="4" placeholder="التفاصيل"></textarea>
-        <input type="tel" id="pPhone" placeholder="رقم الهاتف">
         <label class="custom-file-upload"><input type="file" id="pFiles" multiple accept="image/*" onchange="handleFiles(this.files)" style="display:none;">📸 إضافة الصور</label>
         <div id="preGrid" style="display:flex; gap:5px; margin:10px 0; overflow-x:auto;"></div>
         <div style="display:flex; gap:10px;"><button class="btn" onclick="uploadToFirebase()">نشر</button><button class="btn" style="background:#444;" onclick="togglePublishModal()">إلغاء</button></div>
     </div>
 </div>
 
-<!-- الشريط الجانبي -->
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
 <div class="side-menu" id="sideMenu">
     <h3 style="color:var(--p)">DIABLO HUB</h3>
-    <button class="btn" onclick="showPage('home'); toggleMenu()">🏠 الرئيسية</button>
-    <hr>
-    <button class="btn special-posts-btn" onclick="showPage('specialPosts'); toggleMenu()">⭐ منشورات مميزة</button>
+    <button class="btn" onclick="setCat('الكل'); toggleMenu()">🏠 الرئيسية</button>
+    <button class="btn featured-btn" onclick="setCat('مميز'); toggleMenu()">⭐ المنشورات المميزة</button>
     <hr>
     <button class="btn" style="background:#222;" onclick="showPage('privacy'); toggleMenu()">🛡️ الخصوصية</button>
     <button class="btn" style="background:#222;" onclick="showPage('disclaimer'); toggleMenu()">⚠️ إخلاء المسؤولية</button>
     <button class="btn" style="background:#222;" onclick="showPage('terms'); toggleMenu()">⚖️ الشروط</button>
-    <hr>
-    <button class="btn" style="background:red;" onclick="auth.signOut().then(()=>location.reload())">تسجيل الخروج</button>
 </div>
 
-<!-- صفحة المنشورات المميزة -->
-<div id="specialPosts" class="legal-page">
-    <button class="btn" onclick="showPage('home')" style="width:auto;">✕ إغلاق</button>
-    <h2 style="color:#ffbb00;">⭐ المنشورات المميزة</h2>
-    <div id="specialPostsContainer"></div>
-</div>
-
-<!-- بوت الدردشة -->
 <div id="diablo-bot-icon" onclick="toggleChat()">🤖</div>
 <div id="bot-chat-window">
-    <div style="background:var(--p); padding:10px; color:white; display:flex; justify-content:space-between;">
-        <span>ديابلو بوت</span><span onclick="toggleChat()">✕</span>
-    </div>
+    <div style="background:var(--p); padding:10px; color:white; display:flex; justify-content:space-between;"><span>ديابلو بوت</span><span onclick="toggleChat()">✕</span></div>
     <div id="chat-msgs" style="flex:1; padding:10px; overflow-y:auto; display:flex; flex-direction:column; gap:5px;"></div>
-    <div style="display:flex; padding:5px; border-top:1px solid var(--border);">
-        <input type="text" id="bot-input" style="flex:1; border:none; background:none; color:var(--t);" placeholder="اسألني...">
-        <button onclick="sendToBot()" style="border:none; background:none; color:var(--p);">إرسال</button>
-    </div>
+    <div style="display:flex; padding:5px; border-top:1px solid var(--border);"><input type="text" id="bot-input" style="flex:1; border:none; background:none; color:var(--t);" placeholder="اسألني..."><button onclick="sendToBot()" style="border:none; background:none; color:var(--p);">إرسال</button></div>
+</div>
+
+<div id="privacyPage" class="legal-page">
+    <button class="btn" onclick="showPage('home')" style="width:auto;">✕ إغلاق</button>
+    <h2>🛡️ سياسة الخصوصية</h2>
+    <p>نلتزم بحماية بياناتك. يتم استخدام البيانات فقط لتحسين تجربة المستخدم ونظام النقاط.</p>
+</div>
+
+<div id="disclaimerPage" class="legal-page">
+    <button class="btn" onclick="showPage('home')" style="width:auto;">✕ إغلاق</button>
+    <h2>⚠️ إخلاء المسؤولية</h2>
+    <p>الموقع منصة وسيطة فقط. كل تعامل أو دفع خارج الموقع هو مسؤولية المستخدم.</p>
+</div>
+
+<div id="termsPage" class="legal-page">
+    <button class="btn" onclick="showPage('home')" style="width:auto;">✕ إغلاق</button>
+    <h2>⚖️ الشروط والقوانين</h2>
+    <p>نشر المحتوى يجب أن يكون قانونيًا ومملوك لك. يمكن حذف أي محتوى مخالف.</p>
 </div>
 
 <div class="ads-footer"></div>
 
-<!-- سكريبتات الموقع -->
 <script>
 const firebaseConfig = {
     apiKey: "AIzaSyCGWNteBBsejx6UISfvnTY1YmnQeom7vNg",
@@ -171,43 +132,82 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-const auth = firebase.auth();
-let tempImgs=[], currentCat='الكل', currentUser=null, isAdmin=false;
 
-// مراقبة الدخول
-auth.onAuthStateChanged(user=>{
-    if(user){
-        currentUser=user;
-        if(user.email==="diablo@admin.com") isAdmin=true;
-        document.getElementById('authPage').style.display='none';
-        document.getElementById('startScreen').style.display='flex';
-        loadCloudData();
-    }
-});
+let tempImgs=[], currentCat='الكل';
 
-// تسجيل الدخول
-function handleAuth(){
-    const e=document.getElementById('email').value, p=document.getElementById('pass').value;
-    if(e==="diablo@admin.com" && p!=="3505Ilyas2008"){ alert("كلمة سر الأدمن غير صحيحة!"); return; }
-    auth.signInWithEmailAndPassword(e,p).catch(()=>auth.createUserWithEmailAndPassword(e,p));
+// معرف محلي لكل مستخدم لضمان حذف منشوراته فقط
+let localUserId = localStorage.getItem('diabloUserId');
+if(!localUserId){
+    localUserId = 'user_' + Date.now() + '_' + Math.floor(Math.random()*1000);
+    localStorage.setItem('diabloUserId', localUserId);
 }
 
-// تحديد الدور
-function setRole(role){
-    document.getElementById('startScreen').style.display='none';
-    document.getElementById('homePageContent').style.display='block';
-    if(role==='seller') document.getElementById('mainPublishBtn').style.display='flex';
-}
+// نقاط المستخدم
+let points = parseInt(localStorage.getItem('diabloPoints')) || 0;
+function addPoints(n){ points += n; localStorage.setItem('diabloPoints', points); }
 
-// تحميل المنشورات العادية
+// تحميل المنشورات
 function loadCloudData(){
     db.collection("diablo_posts").orderBy("time","desc").onSnapshot(snap=>{
         const feed=document.getElementById('cloudFeed'); feed.innerHTML="";
         snap.forEach(doc=>{
-            const p=doc.data();
+            const p = doc.data();
             if(currentCat!=='الكل' && p.type!==currentCat) return;
-            const showDelete=isAdmin || (currentUser && p.userId===currentUser.uid);
-            feed.innerHTML+=`
+            const showDelete = (p.userId === localUserId);
+            feed.innerHTML += `
             <div class="post-card">
                 <span class="price-tag">${p.price}$</span>
-                <div style="display:flex; overflow-x:auto; gap:10px;">${p.imgs.map(i=>`<img src="${i}" style="height:150px;border-radius:
+                <div style="display:flex; overflow-x:auto; gap:10px;">${p.imgs.map(i=>`<img src="${i}" style="height:150px; border-radius:10px;">`).join('')}</div>
+                <h3>${p.title}</h3>
+                <p>${p.desc}</p>
+                ${p.type==='مميز'?`<a href="https://wa.me/0695067840" target="_blank" style="background:#25d366; color:white; padding:5px 10px; border-radius:8px; text-decoration:none;">📱 تواصل عبر واتساب</a>`:''}
+                <button onclick="deletePost('${doc.id}')" style="color:red; background:none; border:none; margin-top:10px; ${showDelete?'display:block':'display:none'}">🗑️ حذف المنشور</button>
+            </div>`;
+        });
+    });
+}
+
+// نشر المنشورات
+function togglePublishModal(){ const m=document.getElementById('publishModal'); m.style.display=(m.style.display==='flex')?'none':'flex'; }
+function handleFiles(files){ Array.from(files).forEach(f=>{ const r=new FileReader(); r.onload=e=>{ tempImgs.push({src:e.target.result,id:Date.now()}); renderPre(); }; r.readAsDataURL(f); }); }
+function renderPre(){ document.getElementById('preGrid').innerHTML=tempImgs.map(i=>`<img src="${i.src}" style="width:50px;height:50px;">`).join(''); }
+function uploadToFirebase(){
+    const t=document.getElementById('pTitle').value,d=document.getElementById('pDesc').value,
+          pr=document.getElementById('pPrice').value,tp=document.getElementById('pType').value;
+    db.collection("diablo_posts").add({
+        title:t, desc:d, price:pr, type:tp, imgs:tempImgs.map(i=>i.src),
+        time:Date.now(), userId:localUserId
+    }).then(()=>{addPoints(1); renderPre(); togglePublishModal(); tempImgs=[]; loadCloudData();});
+}
+function deletePost(id){ if(confirm("هل تريد الحذف نهائيًا؟")) db.collection("diablo_posts").doc(id).delete(); }
+
+function toggleMenu(){ document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').style.display=(document.getElementById('overlay').style.display==='block')?'none':'block'; }
+function toggleTheme(){ document.body.classList.toggle('light-mode'); }
+function setCat(c){ currentCat=c; document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active')); event.target.classList.add('active'); loadCloudData(); }
+function showPage(p){ document.querySelectorAll('.legal-page').forEach(d=>d.style.display='none'); if(p==='home'){loadCloudData();}else{document.getElementById(p+'Page').style.display='block';}}
+
+// البوت
+let botMemory = JSON.parse(localStorage.getItem('diabloBotMemory')||'{}');
+function toggleChat(){ const c=document.getElementById('bot-chat-window'); c.style.display=(c.style.display==='flex')?'none':'flex'; }
+function sendToBot(){
+    const input=document.getElementById('bot-input'); const msg=input.value.trim(); if(!msg) return;
+    addMessage('user',msg);
+    if(!botMemory[msg]){ botMemory[msg]=''; localStorage.setItem('diabloBotMemory',JSON.stringify(botMemory)); }
+    let reply = "مرحباً! هذا رد تلقائي من البوت. النظام يتعلم تدريجيًا عبارات جديدة.";
+    addMessage('bot',reply);
+    input.value='';
+    addPoints(0.5); // نقاط للنشاط مع البوت
+}
+function addMessage(sender,text){
+    const container=document.getElementById('chat-msgs');
+    const div=document.createElement('div');
+    div.textContent=text;
+    div.style.background=(sender==='bot')?varP('--p'):'#222'; div.style.color='white'; div.style.padding='5px 10px'; div.style.borderRadius='10px'; div.style.alignSelf=(sender==='bot')?'flex-start':'flex-end';
+    container.appendChild(div); container.scrollTop=container.scrollHeight;
+}
+function varP(prop){ return getComputedStyle(document.documentElement).getPropertyValue(prop); }
+
+loadCloudData();
+</script>
+</body>
+</html>
