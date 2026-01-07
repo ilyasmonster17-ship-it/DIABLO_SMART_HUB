@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Diablo Hub | AI Guide Edition</title>
+    <title>Diablo Hub | AI Social Edition</title>
     
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
@@ -12,85 +12,98 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
 
     <style>
-        :root { --p: #ff4500; --bg: #050505; --card: #111; --t: #fff; --border: #222; }
-        .light-mode { --bg: #f5f5f5; --card: #fff; --t: #222; --border: #ddd; }
-        body { background: var(--bg); color: var(--t); font-family: 'Cairo', sans-serif; margin: 0; transition: 0.3s; padding-bottom: 120px; }
+        :root { --p: #ff4500; --bg: #050505; --card: #111; --t: #fff; --border: #222; --bot-bg: #444; }
+        .light-mode { --bg: #f5f5f5; --card: #fff; --t: #222; --border: #ddd; --bot-bg: #eee; }
         
-        /* تصميم الروبوت الصغير */
-        #diablo-robot {
-            position: fixed; bottom: 100px; left: 20px; width: 60px; height: 60px;
-            background: var(--p); border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; font-size: 30px; z-index: 5000;
-            box-shadow: 0 0 15px var(--p); transition: 1s ease-in-out; cursor: pointer;
+        html, body { height: 100%; margin: 0; padding: 0; }
+        body { background: var(--bg); color: var(--t); font-family: 'Cairo', sans-serif; transition: 0.3s; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        header { padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
+        
+        .page-content { flex: 1; padding: 15px 5%; width: 100%; box-sizing: border-box; display: none; }
+        .post-card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; margin-bottom: 20px; padding: 15px; position: relative; }
+        .img-slider { display: flex; overflow-x: auto; gap: 10px; }
+        .img-slider img { height: 200px; border-radius: 12px; object-fit: cover; border: 1px solid var(--border); }
+
+        /* أيقونة البوت الذكي */
+        #diablo-ai-bot {
+            position: fixed; bottom: 100px; left: 20px; width: 55px; height: 55px;
+            background: linear-gradient(45deg, var(--p), #ff8c00);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 20px rgba(255, 69, 0, 0.5); z-index: 5000; cursor: pointer;
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid #fff;
         }
-        .bot-pop {
-            position: absolute; bottom: 70px; right: 0; width: 200px;
-            background: var(--card); border: 1px solid var(--p); padding: 10px;
-            border-radius: 10px; font-size: 13px; display: none;
+        #bot-message {
+            position: absolute; bottom: 65px; right: 0; width: 220px;
+            background: var(--card); color: var(--t); border: 1px solid var(--p);
+            padding: 12px; border-radius: 15px; font-size: 13px; display: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); line-height: 1.5;
         }
 
-        header { padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
-        .side-menu { position: fixed; top: 0; right: -100%; width: 280px; height: 100%; background: var(--card); z-index: 3000; transition: 0.4s; padding: 20px; border-left: 1px solid var(--border); overflow-y: auto; }
+        .side-menu { position: fixed; top: 0; right: -100%; width: 280px; height: 100%; background: var(--card); z-index: 3000; transition: 0.4s; padding: 20px; border-left: 1px solid var(--border); }
         .side-menu.active { right: 0; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 2500; backdrop-filter: blur(5px); }
-        .page-content { padding: 15px 5%; display: none; }
-        .post-card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; margin-bottom: 20px; padding: 15px; }
-        .img-slider { display: flex; overflow-x: auto; gap: 10px; }
-        .img-slider img { height: 180px; border-radius: 10px; }
-        .ads-footer { position: fixed; bottom: 0; left: 0; width: 100%; height: 85px; background: #000; border-top: 2px solid var(--p); display: flex; justify-content: space-around; align-items: center; z-index: 4000; }
-        .ad-box { width: 30%; height: 60px; background: #1a1a1a; font-size: 9px; color: #555; display: flex; align-items: center; justify-content: center; }
+
         .btn { background: var(--p); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
         input, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--t); }
+        .ads-footer { position: fixed; bottom: 0; left: 0; width: 100%; height: 85px; background: #000; border-top: 2px solid var(--p); display: flex; justify-content: space-around; align-items: center; z-index: 4000; }
+        .admin-del { position: absolute; top: 10px; left: 10px; background: red; color: white; border: none; border-radius: 5px; padding: 5px 10px; font-size: 12px; z-index: 10; cursor: pointer;}
     </style>
 </head>
-<body>
+<body id="body-main">
 
-<div id="diablo-robot" onclick="startTour()">
-    🤖
-    <div class="bot-pop" id="botSpeech">أهلاً! أنا مساعدك. اضغط علي لأعلمك كيف تستخدم الموقع.</div>
+<div id="diablo-ai-bot" onclick="startAiGuide()">
+    <span style="font-size: 24px;">🤖</span>
+    <div id="bot-message">نورت ديابلو هب! اضغط عليّ لأشرح لك المكان.</div>
 </div>
 
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
 <div class="side-menu" id="sideMenu">
-    <h2 style="color:var(--p)">DIABLO MENU</h2>
-    <a href="#" onclick="showPage('home')">🏠 الرئيسية</a>
-    <a href="#" onclick="showPage('favs')">❤️ المفضلة</a>
-    <a href="#" onclick="showPage('auth')">👤 الحساب</a>
-    <hr>
-    <a href="#" onclick="showPage('privacy')">🛡️ الخصوصية</a>
-    <button class="btn" onclick="toggleMenu()">إغلاق</button>
+    <h2 style="color:var(--p)">DIABLO HUB</h2>
+    <a href="#" style="display:block; color:var(--t); padding:12px 0; text-decoration:none;" onclick="showPage('home')">🏠 الرئيسية</a>
+    <a href="#" style="display:block; color:var(--t); padding:12px 0; text-decoration:none;" onclick="showPage('favs')">❤️ المفضلة</a>
+    <a href="#" style="display:block; color:var(--t); padding:12px 0; text-decoration:none;" onclick="showPage('auth')">👤 حسابي</a>
+    <hr style="border-color:var(--border); margin:15px 0;">
+    <a href="#" style="display:block; color:var(--t); padding:10px 0; text-decoration:none; font-size:14px;" onclick="showPage('privacy')">🛡️ سياسة الخصوصية والإخلاء</a>
+    <button class="btn" style="margin-top: 20px; background: #333;" onclick="toggleMenu()">إغلاق</button>
 </div>
 
-<header>
-    <button onclick="toggleMenu()" style="background:none; border:none; color:var(--p); font-size:24px;">☰</button>
-    <div style="font-weight:bold; color:var(--p); font-size:1.2rem;">DIABLO HUB</div>
+<header id="main-header">
+    <div style="display:flex; align-items:center; gap:10px;">
+        <button id="menu-trigger" onclick="toggleMenu()" style="background:none; border:none; color:var(--p); font-size:24px;">☰</button>
+        <div style="font-weight:bold; color:var(--p); font-size:1.2rem;">DIABLO HUB</div>
+    </div>
     <button onclick="toggleTheme()" style="background:none; border:1px solid var(--p); color:var(--p); border-radius:20px; padding:4px 12px;">MODE</button>
 </header>
 
 <div id="homePage" class="page-content" style="display:block;">
-    <div id="roleSelection" style="text-align:center; padding: 20px 0;">
-        <button class="btn" id="btnInvestor" onclick="initApp('investor')" style="max-width:200px;">دخول المستثمرين</button>
-        <button class="btn" id="btnSeller" onclick="initApp('seller')" style="max-width:200px; margin-top:10px; background:#222; border:1px solid var(--p);">دخول الملاك</button>
+    <div id="roleSelection" style="text-align:center; padding: 30px 0;">
+        <button class="btn" id="btn-inv" onclick="initApp('investor')" style="max-width:250px;">دخول المستثمرين</button>
+        <button class="btn" id="btn-sell" onclick="initApp('seller')" style="max-width:250px; margin-top:10px; background:#222; border:1px solid var(--p);">دخول الملاك</button>
     </div>
 
     <div id="uploadArea" style="display:none; background:var(--card); padding:20px; border-radius:15px; border:1px solid var(--border); margin-bottom:20px;">
+        <h4 style="margin:0 0 10px 0; color:var(--p);">نشر إعلان جديد</h4>
         <input type="text" id="pTitle" placeholder="عنوان العقار...">
-        <textarea id="pDesc" rows="3" placeholder="تحدث معي هنا.. السلام عليكم.." oninput="smartBotAnalyze(this.value)"></textarea>
-        <input type="tel" id="pPhone" placeholder="رقم الهاتف...">
+        <textarea id="pDesc" rows="3" placeholder="تحدث معي هنا.. اكتب 'السلام عليكم' أو 'كيف حالك؟'" oninput="aiSocialTalk(this.value)"></textarea>
+        <input type="tel" id="pPhone" placeholder="رقم الهاتف للتواصل...">
         <input type="file" id="pFiles" multiple accept="image/*" onchange="handleFiles(this.files)">
-        <div id="preGrid" style="display:flex; gap:10px; margin:10px 0;"></div>
-        <button class="btn" id="btnFinalUpload" onclick="uploadToFirebase()">نشر الإعلان</button>
+        <div id="preGrid" style="display:flex; gap:10px; margin:10px 0; flex-wrap: wrap;"></div>
+        <button class="btn" onclick="uploadToFirebase()">نشر الإعلان الآن</button>
     </div>
     <div id="cloudFeed"></div>
 </div>
 
-<div id="authPage" class="page-content"><h3>تسجيل الدخول</h3><input type="email" id="email" placeholder="Email"><input type="password" id="pass" placeholder="Password"><button class="btn" onclick="handleAuth()">دخول</button></div>
+<div id="authPage" class="page-content"><div id="loginForm" style="text-align:center;"><h3>تسجيل الدخول</h3><input type="email" id="email" placeholder="Email"><input type="password" id="pass" placeholder="Password"><button class="btn" onclick="handleAuth()">دخول</button></div></div>
 <div id="favsPage" class="page-content"><h2>❤️ المفضلة</h2><div id="favFeed"></div></div>
-<div id="privacyPage" class="page-content"><h2>🛡️ الخصوصية</h2><p>موقعنا يحترم خصوصيتك ويستخدم إعلانات جوجل.</p></div>
+<div id="privacyPage" class="page-content"><h2>🛡️ الخصوصية</h2><p>نحن نحمي بياناتك ونستخدم إعلانات جوجل.</p></div>
 
 <div class="ads-footer">
-    <div class="ad-box">Ad 1</div><div class="ad-box">Ad 2</div><div class="ad-box">Ad 3</div>
+    <div class="ad-box">Ad Slot 1</div>
+    <div class="ad-box">Ad Slot 2</div>
+    <div class="ad-box">Ad Slot 3</div>
 </div>
 
 <script>
@@ -102,46 +115,59 @@
         messagingSenderId: "948075676362",
         appId: "1:948075676362:web:c27d582068712cbe13aa33"
     };
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const auth = firebase.auth();
     let tempImgs = [], isAdmin = false;
 
-    // وظيفة الروبوت المرشد
-    function startTour() {
-        const bot = document.getElementById('diablo-robot');
-        const speech = document.getElementById('botSpeech');
-        speech.style.display = "block";
-        
-        // الخطوة 1: اذهب لزر الملاك
-        speech.innerText = "إذا كنت تملك شقة، اضغط على 'دخول الملاك' هنا!";
-        bot.style.bottom = "70%"; bot.style.left = "40%";
+    // جولة البوت الذكي (تعمل على كل الأجهزة بدقة)
+    function startAiGuide() {
+        const bot = document.getElementById('diablo-ai-bot');
+        const msg = document.getElementById('bot-message');
+        msg.style.display = "block";
+
+        const btnSell = document.getElementById('btn-sell');
+        const rect1 = btnSell.getBoundingClientRect();
+        msg.innerText = "إذا كنت تملك شقة، اضغط هنا لتبدأ النشر!";
+        bot.style.transform = `translate(${rect1.left - 20}px, ${rect1.top - bot.offsetTop - 60}px)`;
 
         setTimeout(() => {
-            // الخطوة 2: اذهب للقائمة
-            speech.innerText = "وهنا تجد القائمة الجانبية للتنقل!";
-            bot.style.bottom = "85%"; bot.style.left = "5%";
-            
+            const menuBtn = document.getElementById('menu-trigger');
+            const rect2 = menuBtn.getBoundingClientRect();
+            msg.innerText = "ومن هنا يمكنك استكشاف القائمة الجانبية!";
+            bot.style.transform = `translate(${rect2.left - 20}px, ${rect2.top - bot.offsetTop}px)`;
+
             setTimeout(() => {
-                // العودة للوضع الطبيعي
-                speech.innerText = "أنا هنا دائماً لمساعدتك، اسألني في خانة الوصف!";
-                bot.style.bottom = "100px"; bot.style.left = "20px";
-                setTimeout(() => speech.style.display = "none", 3000);
-            }, 3000);
-        }, 3000);
+                msg.innerText = "أنا مساعدك الذكي، جرب الحديث معي في خانة الوصف!";
+                bot.style.transform = `translate(0px, 0px)`;
+                setTimeout(() => msg.style.display = "none", 4000);
+            }, 3500);
+        }, 3500);
     }
 
-    // تفاعل البوت مع الكتابة (السلام والكلام)
-    function smartBotAnalyze(text) {
-        const speech = document.getElementById('botSpeech');
-        speech.style.display = "block";
-        const t = text.toLowerCase();
-        if(t.includes("السلام")) speech.innerText = "وعليكم السلام! نورت ديابلو هب 🌹";
-        else if(t.includes("سعر")) speech.innerText = "نصيحة: السعر الواضح يجذب المستثمرين أسرع!";
-        else speech.innerText = "أنا أسمعك.. استمر في كتابة تفاصيل عقارك.";
+    // الذكاء الاجتماعي للبوت (الرد والتحية)
+    function aiSocialTalk(val) {
+        const msg = document.getElementById('bot-message');
+        msg.style.display = "block";
+        const t = val.toLowerCase().trim();
+
+        if (t.includes("سلام") || t.includes("مرحبا") || t.includes("اهلا")) {
+            msg.innerText = "👋 وعليكم السلام يا بطل! كيف يمكنني مساعدتك اليوم؟";
+        } else if (t.includes("كيف حالك") || t.includes("شخبارك")) {
+            msg.innerText = "😊 أنا بأفضل حال ما دام 'ديابلو هب' يعمل بنجاح! وأنت؟";
+        } else if (t.includes("شكرا") || t.includes("تسلم")) {
+            msg.innerText = "🌹 العفو! هذا واجبي لخدمة مجتمع ديابلو.";
+        } else if (t.includes("سعر") || t.includes("بكم")) {
+            msg.innerText = "💡 نصيحة: وضع السعر بوضوح يزيد من فرص بيع عقارك!";
+        } else if (t.length > 20) {
+            msg.innerText = "👀 أحلل إعلانك الآن.. يبدو وصفاً احترافياً!";
+        } else {
+            msg.innerText = "🤖 أنا أسمعك.. أكمل كتابة تفاصيل عقارك.";
+        }
     }
 
-    // بقية وظائف الكود (Firebase, Theme, Menu) بدون تغيير
+    // بقية وظائف الكود (دون أي تغيير في المنطق)
     auth.onAuthStateChanged(user => {
         if (user) {
             if(user.email === "diablo@admin.com") isAdmin = true;
@@ -165,7 +191,7 @@
             const r = new FileReader();
             r.onload = e => {
                 tempImgs.push({src: e.target.result, id: Date.now()});
-                document.getElementById('preGrid').innerHTML += `<img src="${e.target.result}" style="width:50px; border-radius:5px;">`;
+                document.getElementById('preGrid').innerHTML += `<img src="${e.target.result}" style="width:60px; height:60px; border-radius:8px; object-fit:cover; margin:5px;">`;
             };
             r.readAsDataURL(f);
         });
@@ -173,34 +199,33 @@
 
     function uploadToFirebase() {
         const t = document.getElementById('pTitle').value, d = document.getElementById('pDesc').value, ph = document.getElementById('pPhone').value;
-        if(!t || tempImgs.length === 0) return alert("ناقص!");
+        if(!t || tempImgs.length === 0) return alert("البيانات ناقصة!");
         db.collection("diablo_posts").add({ title: t, desc: d, phone: ph, imgs: tempImgs.map(i => i.src), time: Date.now() }).then(() => location.reload());
     }
 
     function loadCloudData() {
         db.collection("diablo_posts").orderBy("time", "desc").onSnapshot(snap => {
-            document.getElementById('cloudFeed').innerHTML = "";
+            const feed = document.getElementById('cloudFeed');
+            feed.innerHTML = "";
             snap.forEach(doc => {
                 const p = doc.data();
-                document.getElementById('cloudFeed').innerHTML += `
+                feed.innerHTML += `
                     <div class="post-card">
-                        ${isAdmin ? `<button onclick="deletePost('${doc.id}')" style="background:red; color:white;">حذف</button>` : ''}
+                        ${isAdmin ? `<button class="admin-del" onclick="deletePost('${doc.id}')">🗑️ حذف</button>` : ''}
                         <div class="img-slider">${p.imgs.map(i => `<img src="${i}">`).join('')}</div>
                         <h3>${p.title}</h3>
                         <p>${p.desc}</p>
-                        ${p.phone ? `<a href="tel:${p.phone}" style="color:var(--p)">📞 ${p.phone}</a>` : ''}
+                        ${p.phone ? `<a href="tel:${p.phone}" style="color:var(--p); font-weight:bold; text-decoration:none;">📞 اتصل: ${p.phone}</a>` : ''}
                     </div>`;
             });
         });
     }
 
-    function deletePost(id) { if(confirm("حذف؟")) db.collection("diablo_posts").doc(id).delete(); }
+    function deletePost(id) { if(confirm("حذف نهائي؟")) db.collection("diablo_posts").doc(id).delete(); }
     function showPage(p) { document.querySelectorAll('.page-content').forEach(c => c.style.display='none'); document.getElementById(p+'Page').style.display='block'; toggleMenu(); }
     function toggleMenu() { const m = document.getElementById('sideMenu'); m.classList.toggle('active'); document.getElementById('overlay').style.display = m.classList.contains('active') ? 'block' : 'none'; }
     function toggleTheme() { document.body.classList.toggle('light-mode'); }
-    
-    // إظهار نصيحة ترحيبية بعد ثانيتين
-    setTimeout(() => { document.getElementById('botSpeech').style.display = "block"; }, 2000);
 </script>
 </body>
-</html>
+    </html>
+    
