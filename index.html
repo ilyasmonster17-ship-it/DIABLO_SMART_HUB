@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Diablo Hub | AI Social Edition</title>
+    <title>Diablo Hub | AI Smart Management</title>
     
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
@@ -12,98 +12,111 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
 
     <style>
-        :root { --p: #ff4500; --bg: #050505; --card: #111; --t: #fff; --border: #222; --bot-bg: #444; }
-        .light-mode { --bg: #f5f5f5; --card: #fff; --t: #222; --border: #ddd; --bot-bg: #eee; }
+        :root { --p: #ff4500; --bg: #050505; --card: #111; --t: #fff; --border: #222; }
+        .light-mode { --bg: #f5f5f5; --card: #fff; --t: #222; --border: #ddd; }
         
-        html, body { height: 100%; margin: 0; padding: 0; }
-        body { background: var(--bg); color: var(--t); font-family: 'Cairo', sans-serif; transition: 0.3s; display: flex; flex-direction: column; min-height: 100vh; }
+        body { background: var(--bg); color: var(--t); font-family: 'Cairo', sans-serif; margin: 0; min-height: 100vh; overflow-x: hidden; padding-bottom: 100px; }
+        header { padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; background: var(--card); border-bottom: 1px solid var(--border); sticky; top: 0; z-index: 1000; }
         
-        header { padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
-        
-        .page-content { flex: 1; padding: 15px 5%; width: 100%; box-sizing: border-box; display: none; }
+        /* البوت والفقاعة */
+        #diablo-ai-bot { position: fixed; bottom: 110px; left: 20px; width: 55px; height: 55px; background: var(--p); border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 5000; cursor: pointer; border: 2px solid white; transition: 0.5s; }
+        #bot-bubble { position: absolute; bottom: 65px; left: 0; width: 200px; background: var(--card); border: 1px solid var(--p); padding: 10px; border-radius: 10px; font-size: 12px; display: none; z-index: 5001; box-shadow: 0 5px 15px #000; }
+
+        .page-content { padding: 15px 5%; display: none; width: 100%; box-sizing: border-box; }
         .post-card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; margin-bottom: 20px; padding: 15px; position: relative; }
         .img-slider { display: flex; overflow-x: auto; gap: 10px; }
-        .img-slider img { height: 200px; border-radius: 12px; object-fit: cover; border: 1px solid var(--border); }
+        .img-slider img { height: 180px; border-radius: 10px; }
 
-        /* أيقونة البوت الذكي */
-        #diablo-ai-bot {
-            position: fixed; bottom: 100px; left: 20px; width: 55px; height: 55px;
-            background: linear-gradient(45deg, var(--p), #ff8c00);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 20px rgba(255, 69, 0, 0.5); z-index: 5000; cursor: pointer;
-            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 2px solid #fff;
-        }
-        #bot-message {
-            position: absolute; bottom: 65px; right: 0; width: 220px;
-            background: var(--card); color: var(--t); border: 1px solid var(--p);
-            padding: 12px; border-radius: 15px; font-size: 13px; display: none;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5); line-height: 1.5;
-        }
+        /* معاينة الصور مع زر المسح */
+        .pre-box { position: relative; display: inline-block; margin: 5px; }
+        .pre-box img { width: 60px; height: 60px; border-radius: 5px; object-fit: cover; }
+        .pre-box .del-img { position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px; }
 
         .side-menu { position: fixed; top: 0; right: -100%; width: 280px; height: 100%; background: var(--card); z-index: 3000; transition: 0.4s; padding: 20px; border-left: 1px solid var(--border); }
         .side-menu.active { right: 0; }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 2500; backdrop-filter: blur(5px); }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 2500; }
 
-        .btn { background: var(--p); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
-        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--t); }
+        .btn { background: var(--p); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
+        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--t); }
+        
+        .user-profile { text-align: center; padding: 10px; background: #1a1a1a; border-radius: 10px; margin-bottom: 15px; }
+        .profile-img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--p); }
+
         .ads-footer { position: fixed; bottom: 0; left: 0; width: 100%; height: 85px; background: #000; border-top: 2px solid var(--p); display: flex; justify-content: space-around; align-items: center; z-index: 4000; }
-        .admin-del { position: absolute; top: 10px; left: 10px; background: red; color: white; border: none; border-radius: 5px; padding: 5px 10px; font-size: 12px; z-index: 10; cursor: pointer;}
+        .ad-box { width: 30%; height: 60px; background: #111; font-size: 10px; color: #444; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
-<body id="body-main">
+<body>
 
-<div id="diablo-ai-bot" onclick="startAiGuide()">
-    <span style="font-size: 24px;">🤖</span>
-    <div id="bot-message">نورت ديابلو هب! اضغط عليّ لأشرح لك المكان.</div>
+<div id="diablo-ai-bot" onclick="startGuide()">
+    🤖
+    <div id="bot-bubble">أهلاً! أنا ذكاء ديابلو. كيف أساعدك؟</div>
 </div>
 
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
 <div class="side-menu" id="sideMenu">
+    <div id="sideProfile" class="user-profile" style="display:none;">
+        <img id="uPic" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="profile-img">
+        <div id="uName" style="font-weight:bold; margin-top:5px;">مستخدم ديابلو</div>
+        <button onclick="showPage('profile')" style="background:none; border:none; color:var(--p); font-size:12px; cursor:pointer;">تعديل البروفايل</button>
+    </div>
     <h2 style="color:var(--p)">DIABLO HUB</h2>
-    <a href="#" style="display:block; color:var(--t); padding:12px 0; text-decoration:none;" onclick="showPage('home')">🏠 الرئيسية</a>
-    <a href="#" style="display:block; color:var(--t); padding:12px 0; text-decoration:none;" onclick="showPage('favs')">❤️ المفضلة</a>
-    <a href="#" style="display:block; color:var(--t); padding:12px 0; text-decoration:none;" onclick="showPage('auth')">👤 حسابي</a>
-    <hr style="border-color:var(--border); margin:15px 0;">
-    <a href="#" style="display:block; color:var(--t); padding:10px 0; text-decoration:none; font-size:14px;" onclick="showPage('privacy')">🛡️ سياسة الخصوصية والإخلاء</a>
-    <button class="btn" style="margin-top: 20px; background: #333;" onclick="toggleMenu()">إغلاق</button>
+    <a href="#" onclick="showPage('home')" style="display:block; color:var(--t); padding:10px 0; text-decoration:none;">🏠 الرئيسية</a>
+    <a href="#" onclick="showPage('auth')" style="display:block; color:var(--t); padding:10px 0; text-decoration:none;" id="loginLink">🔑 دخول / حساب جديد</a>
+    <a href="#" onclick="showPage('favs')" style="display:block; color:var(--t); padding:10px 0; text-decoration:none;">❤️ المفضلة</a>
+    <hr>
+    <button class="btn" style="background:#333;" onclick="toggleMenu()">إغلاق</button>
+    <button class="btn" id="logoutBtn" style="display:none; background:red; margin-top:20px;" onclick="auth.signOut().then(()=>location.reload())">خروج</button>
 </div>
 
-<header id="main-header">
-    <div style="display:flex; align-items:center; gap:10px;">
-        <button id="menu-trigger" onclick="toggleMenu()" style="background:none; border:none; color:var(--p); font-size:24px;">☰</button>
-        <div style="font-weight:bold; color:var(--p); font-size:1.2rem;">DIABLO HUB</div>
-    </div>
+<header>
+    <button onclick="toggleMenu()" style="background:none; border:none; color:var(--p); font-size:24px;">☰</button>
+    <div style="font-weight:bold; color:var(--p); font-size:1.2rem;">DIABLO HUB</div>
     <button onclick="toggleTheme()" style="background:none; border:1px solid var(--p); color:var(--p); border-radius:20px; padding:4px 12px;">MODE</button>
 </header>
 
 <div id="homePage" class="page-content" style="display:block;">
     <div id="roleSelection" style="text-align:center; padding: 30px 0;">
-        <button class="btn" id="btn-inv" onclick="initApp('investor')" style="max-width:250px;">دخول المستثمرين</button>
-        <button class="btn" id="btn-sell" onclick="initApp('seller')" style="max-width:250px; margin-top:10px; background:#222; border:1px solid var(--p);">دخول الملاك</button>
+        <button class="btn" id="goInv" onclick="showInvestors()">📊 قسم المستثمرين</button>
+        <button class="btn" id="goSell" onclick="initApp('seller')" style="background:#222; border:1px solid var(--p);">🏠 قسم الملاك</button>
     </div>
 
     <div id="uploadArea" style="display:none; background:var(--card); padding:20px; border-radius:15px; border:1px solid var(--border); margin-bottom:20px;">
-        <h4 style="margin:0 0 10px 0; color:var(--p);">نشر إعلان جديد</h4>
-        <input type="text" id="pTitle" placeholder="عنوان العقار...">
-        <textarea id="pDesc" rows="3" placeholder="تحدث معي هنا.. اكتب 'السلام عليكم' أو 'كيف حالك؟'" oninput="aiSocialTalk(this.value)"></textarea>
-        <input type="tel" id="pPhone" placeholder="رقم الهاتف للتواصل...">
+        <input type="text" id="pTitle" placeholder="العنوان...">
+        <textarea id="pDesc" rows="3" placeholder="الوصف (اكتب 'سلام' للبوت)..." oninput="aiTalk(this.value)"></textarea>
+        <input type="tel" id="pPhone" placeholder="رقم الهاتف...">
         <input type="file" id="pFiles" multiple accept="image/*" onchange="handleFiles(this.files)">
-        <div id="preGrid" style="display:flex; gap:10px; margin:10px 0; flex-wrap: wrap;"></div>
-        <button class="btn" onclick="uploadToFirebase()">نشر الإعلان الآن</button>
+        <div id="preGrid" style="margin:10px 0;"></div>
+        <button class="btn" onclick="uploadToFirebase()">نشر الإعلان</button>
     </div>
     <div id="cloudFeed"></div>
 </div>
 
-<div id="authPage" class="page-content"><div id="loginForm" style="text-align:center;"><h3>تسجيل الدخول</h3><input type="email" id="email" placeholder="Email"><input type="password" id="pass" placeholder="Password"><button class="btn" onclick="handleAuth()">دخول</button></div></div>
-<div id="favsPage" class="page-content"><h2>❤️ المفضلة</h2><div id="favFeed"></div></div>
-<div id="privacyPage" class="page-content"><h2>🛡️ الخصوصية</h2><p>نحن نحمي بياناتك ونستخدم إعلانات جوجل.</p></div>
+<div id="authPage" class="page-content">
+    <div style="text-align:center; max-width:400px; margin:auto; background:var(--card); padding:20px; border-radius:15px;">
+        <h3 id="authTitle">تسجيل دخول / حساب جديد</h3>
+        <input type="email" id="email" placeholder="البريد الإلكتروني">
+        <input type="password" id="pass" placeholder="كلمة المرور">
+        <select id="avatarChoice">
+            <option value="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">بروفايل 1</option>
+            <option value="https://cdn-icons-png.flaticon.com/512/4140/4140048.png">بروفايل 2</option>
+            <option value="https://cdn-icons-png.flaticon.com/512/4140/4140047.png">بروفايل 3</option>
+        </select>
+        <button class="btn" onclick="handleAuth()">دخول الآن</button>
+    </div>
+</div>
+
+<div id="profilePage" class="page-content">
+    <h3>تعديل حسابي</h3>
+    <input type="text" id="editName" placeholder="اسمك الجديد">
+    <button class="btn" onclick="updateProfile()">حفظ التعديلات</button>
+</div>
+
+<div id="favsPage" class="page-content"><h2>❤️ المفضلة</h2></div>
 
 <div class="ads-footer">
-    <div class="ad-box">Ad Slot 1</div>
-    <div class="ad-box">Ad Slot 2</div>
-    <div class="ad-box">Ad Slot 3</div>
+    <div class="ad-box">AD 1</div><div class="ad-box">AD 2</div><div class="ad-box">AD 3</div>
 </div>
 
 <script>
@@ -115,91 +128,100 @@
         messagingSenderId: "948075676362",
         appId: "1:948075676362:web:c27d582068712cbe13aa33"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const auth = firebase.auth();
     let tempImgs = [], isAdmin = false;
 
-    // جولة البوت الذكي (تعمل على كل الأجهزة بدقة)
-    function startAiGuide() {
-        const bot = document.getElementById('diablo-ai-bot');
-        const msg = document.getElementById('bot-message');
-        msg.style.display = "block";
-
-        const btnSell = document.getElementById('btn-sell');
-        const rect1 = btnSell.getBoundingClientRect();
-        msg.innerText = "إذا كنت تملك شقة، اضغط هنا لتبدأ النشر!";
-        bot.style.transform = `translate(${rect1.left - 20}px, ${rect1.top - bot.offsetTop - 60}px)`;
-
-        setTimeout(() => {
-            const menuBtn = document.getElementById('menu-trigger');
-            const rect2 = menuBtn.getBoundingClientRect();
-            msg.innerText = "ومن هنا يمكنك استكشاف القائمة الجانبية!";
-            bot.style.transform = `translate(${rect2.left - 20}px, ${rect2.top - bot.offsetTop}px)`;
-
-            setTimeout(() => {
-                msg.innerText = "أنا مساعدك الذكي، جرب الحديث معي في خانة الوصف!";
-                bot.style.transform = `translate(0px, 0px)`;
-                setTimeout(() => msg.style.display = "none", 4000);
-            }, 3500);
-        }, 3500);
-    }
-
-    // الذكاء الاجتماعي للبوت (الرد والتحية)
-    function aiSocialTalk(val) {
-        const msg = document.getElementById('bot-message');
-        msg.style.display = "block";
-        const t = val.toLowerCase().trim();
-
-        if (t.includes("سلام") || t.includes("مرحبا") || t.includes("اهلا")) {
-            msg.innerText = "👋 وعليكم السلام يا بطل! كيف يمكنني مساعدتك اليوم؟";
-        } else if (t.includes("كيف حالك") || t.includes("شخبارك")) {
-            msg.innerText = "😊 أنا بأفضل حال ما دام 'ديابلو هب' يعمل بنجاح! وأنت؟";
-        } else if (t.includes("شكرا") || t.includes("تسلم")) {
-            msg.innerText = "🌹 العفو! هذا واجبي لخدمة مجتمع ديابلو.";
-        } else if (t.includes("سعر") || t.includes("بكم")) {
-            msg.innerText = "💡 نصيحة: وضع السعر بوضوح يزيد من فرص بيع عقارك!";
-        } else if (t.length > 20) {
-            msg.innerText = "👀 أحلل إعلانك الآن.. يبدو وصفاً احترافياً!";
-        } else {
-            msg.innerText = "🤖 أنا أسمعك.. أكمل كتابة تفاصيل عقارك.";
-        }
-    }
-
-    // بقية وظائف الكود (دون أي تغيير في المنطق)
+    // مراقبة المستخدم
     auth.onAuthStateChanged(user => {
         if (user) {
+            document.getElementById('sideProfile').style.display = 'block';
+            document.getElementById('logoutBtn').style.display = 'block';
+            document.getElementById('loginLink').style.display = 'none';
+            document.getElementById('uName').innerText = user.displayName || user.email;
+            document.getElementById('uPic').src = user.photoURL || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
             if(user.email === "diablo@admin.com") isAdmin = true;
             loadCloudData();
         }
     });
 
+    // تسجيل الدخول والإنشاء المدمج
     function handleAuth() {
-        const e = document.getElementById('email').value, p = document.getElementById('pass').value;
-        auth.signInWithEmailAndPassword(e, p).catch(() => auth.createUserWithEmailAndPassword(e, p));
+        const e = document.getElementById('email').value, p = document.getElementById('pass').value, av = document.getElementById('avatarChoice').value;
+        auth.signInWithEmailAndPassword(e, p).then(() => {
+            showPage('home');
+        }).catch(() => {
+            auth.createUserWithEmailAndPassword(e, p).then(res => {
+                res.user.updateProfile({ photoURL: av });
+                showPage('home');
+            });
+        });
     }
 
-    function initApp(role) {
-        document.getElementById('roleSelection').style.display = 'none';
-        if(role === 'seller') document.getElementById('uploadArea').style.display = 'block';
-        loadCloudData();
+    // تعديل البروفايل
+    function updateProfile() {
+        const n = document.getElementById('editName').value;
+        auth.currentUser.updateProfile({ displayName: n }).then(() => {
+            alert("تم التحديث!");
+            location.reload();
+        });
     }
 
+    // البوت المرشد
+    function startGuide() {
+        const bot = document.getElementById('diablo-ai-bot');
+        const bub = document.getElementById('bot-bubble');
+        bub.style.display = "block";
+        
+        const target = document.getElementById('goInv').getBoundingClientRect();
+        bot.style.transform = `translate(${target.left - 20}px, ${target.top - bot.offsetTop - 60}px)`;
+        bub.innerText = "هنا قسم المستثمرين لمشاهدة العروض!";
+
+        setTimeout(() => {
+            bot.style.transform = "translate(0,0)";
+            bub.innerText = "تحدث معي في خانة الوصف إذا احتجت مساعدة!";
+            setTimeout(() => bub.style.display="none", 3000);
+        }, 4000);
+    }
+
+    function aiTalk(v) {
+        const bub = document.getElementById('bot-bubble');
+        bub.style.display = "block";
+        const t = v.toLowerCase();
+        if(t.includes("سلام")) bub.innerText = "وعليكم السلام يا ديابلو! كيف حالك؟";
+        else if(t.includes("سعر")) bub.innerText = "نصيحة: العقارات بسعر جيد تظهر أولاً!";
+        else bub.innerText = "أنا أسمعك.. أكمل!";
+    }
+
+    // معالجة الصور ومسحها
     function handleFiles(files) {
         Array.from(files).forEach(f => {
             const r = new FileReader();
             r.onload = e => {
-                tempImgs.push({src: e.target.result, id: Date.now()});
-                document.getElementById('preGrid').innerHTML += `<img src="${e.target.result}" style="width:60px; height:60px; border-radius:8px; object-fit:cover; margin:5px;">`;
+                const id = Date.now() + Math.random();
+                tempImgs.push({src: e.target.result, id: id});
+                renderPre();
             };
             r.readAsDataURL(f);
         });
     }
 
+    function renderPre() {
+        document.getElementById('preGrid').innerHTML = tempImgs.map(i => `
+            <div class="pre-box">
+                <img src="${i.src}">
+                <button class="del-img" onclick="removeImg(${i.id})">✕</button>
+            </div>
+        `).join('');
+    }
+
+    function removeImg(id) { tempImgs = tempImgs.filter(i => i.id !== id); renderPre(); }
+
+    // الرفع والحذف (للأدمن)
     function uploadToFirebase() {
         const t = document.getElementById('pTitle').value, d = document.getElementById('pDesc').value, ph = document.getElementById('pPhone').value;
-        if(!t || tempImgs.length === 0) return alert("البيانات ناقصة!");
+        if(!t || tempImgs.length === 0) return alert("ناقص!");
         db.collection("diablo_posts").add({ title: t, desc: d, phone: ph, imgs: tempImgs.map(i => i.src), time: Date.now() }).then(() => location.reload());
     }
 
@@ -211,21 +233,42 @@
                 const p = doc.data();
                 feed.innerHTML += `
                     <div class="post-card">
-                        ${isAdmin ? `<button class="admin-del" onclick="deletePost('${doc.id}')">🗑️ حذف</button>` : ''}
+                        ${isAdmin ? `<button onclick="deletePost('${doc.id}')" style="background:red; color:white; border:none; border-radius:5px; position:absolute; top:10px; left:10px; padding:5px; cursor:pointer;">حذف 🗑️</button>` : ''}
                         <div class="img-slider">${p.imgs.map(i => `<img src="${i}">`).join('')}</div>
                         <h3>${p.title}</h3>
                         <p>${p.desc}</p>
-                        ${p.phone ? `<a href="tel:${p.phone}" style="color:var(--p); font-weight:bold; text-decoration:none;">📞 اتصل: ${p.phone}</a>` : ''}
+                        ${p.phone ? `<a href="tel:${p.phone}" style="color:var(--p); font-weight:bold;">📞 اتصل: ${p.phone}</a>` : ''}
                     </div>`;
             });
         });
     }
 
     function deletePost(id) { if(confirm("حذف نهائي؟")) db.collection("diablo_posts").doc(id).delete(); }
-    function showPage(p) { document.querySelectorAll('.page-content').forEach(c => c.style.display='none'); document.getElementById(p+'Page').style.display='block'; toggleMenu(); }
-    function toggleMenu() { const m = document.getElementById('sideMenu'); m.classList.toggle('active'); document.getElementById('overlay').style.display = m.classList.contains('active') ? 'block' : 'none'; }
+
+    function initApp(role) {
+        document.getElementById('roleSelection').style.display = 'none';
+        if(role === 'seller') document.getElementById('uploadArea').style.display = 'block';
+    }
+
+    function showInvestors() {
+        document.getElementById('roleSelection').style.display = 'none';
+        document.getElementById('cloudFeed').style.display = 'block';
+    }
+
+    function showPage(p) {
+        document.querySelectorAll('.page-content').forEach(c => c.style.display='none');
+        document.getElementById(p+'Page').style.display='block';
+        toggleMenu();
+    }
+
+    function toggleMenu() {
+        const m = document.getElementById('sideMenu');
+        m.classList.toggle('active');
+        document.getElementById('overlay').style.display = m.classList.contains('active') ? 'block' : 'none';
+    }
+
     function toggleTheme() { document.body.classList.toggle('light-mode'); }
 </script>
 </body>
-    </html>
-    
+                                                                                   </html>
+        
