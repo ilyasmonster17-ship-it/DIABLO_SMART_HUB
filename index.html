@@ -23,10 +23,9 @@
         .cat-btn{background:var(--card);border:1px solid var(--border);color:var(--t);padding:8px 15px;border-radius:20px;cursor:pointer;}
         .cat-btn.active{background:var(--p);color:white;border-color:var(--p);}
         .post-card{background:var(--card);border:1px solid var(--border);border-radius:15px;margin:15px 5%;padding:15px;position:relative;}
-        .request-card{background:linear-gradient(45deg, #1a1a1a, #222); border:1px dashed var(--p); border-radius:15px; margin:15px 5%; padding:15px;}
         .price-tag{position:absolute;top:10px;left:10px;background:#25d366;color:white;padding:3px 12px;border-radius:20px;font-weight:bold;}
         .btn{background:var(--p);color:white;border:none;padding:12px;border-radius:8px;cursor:pointer;font-weight:bold;width:100%;margin-top:10px;text-align:center;text-decoration:none;display:block;}
-        #publishModal, #premiumPage, #requestModal, #policyModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:10001;align-items:center;justify-content:center;padding:20px;}
+        #publishModal, #premiumPage, #policyModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:10001;align-items:center;justify-content:center;padding:20px;}
         .modal-content{background:var(--card);padding:20px;border-radius:15px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;}
         input,textarea,select{width:100%;padding:12px;margin:8px 0;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--t);box-sizing:border-box;}
         .loading-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.9);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:20000;color:white;}
@@ -59,7 +58,6 @@
         <button class="cat-btn" onclick="setCat('شقق', this)">🏙️ شقق</button>
         <button class="cat-btn" onclick="setCat('فيلات', this)">🏰 فيلات</button>
         <button class="cat-btn" onclick="setCat('منازل', this)">🏡 منازل</button>
-        <button class="cat-btn" id="reqCatBtn" onclick="setCat('طلبات', this)">📋 طلبات البحث</button>
         <button class="cat-btn" style="background:var(--gold);color:black;font-weight:bold;" onclick="showPremium()">✨ تميز الآن</button>
     </div>
 
@@ -72,7 +70,6 @@
     <h2 style="color:var(--p)">DIABLO HUB</h2>
     <hr style="border:0;border-top:1px solid var(--border);margin:10px 0;">
     <button class="btn" onclick="location.reload()">🏠 الرئيسية</button>
-    <button class="btn" style="background:#222;" onclick="openRequestModal()">➕ انشر طلب شراء</button>
     <button class="btn" onclick="showPremium()">💎 إعلان مميز</button>
     <button class="btn" onclick="toggleTheme()">🌓 تغيير المظهر</button>
     <hr style="border:0;border-top:1px solid var(--border);margin:20px 0;">
@@ -101,18 +98,6 @@
         <div id="preGrid" style="display:flex;gap:10px;margin:10px 0;overflow-x:auto;"></div>
         <button class="btn" onclick="uploadPost()">نشر الإعلان الآن</button>
         <button class="btn" style="background:#111;" onclick="document.getElementById('publishModal').style.display='none'">إلغاء</button>
-    </div>
-</div>
-
-<div id="requestModal">
-    <div class="modal-content">
-        <h3 style="color:var(--p)">ماذا تبحث عنه؟ ✨</h3>
-        <input type="text" id="rCity" placeholder="المدينة المطلوبة">
-        <input type="number" id="rPrice" placeholder="الميزانية">
-        <select id="rType"><option value="شقق">شقة</option><option value="فيلات">فيلا</option><option value="منازل">منزل</option></select>
-        <input type="tel" id="rPhone" placeholder="رقم الهاتف">
-        <button class="btn" onclick="addRequest()">تأكيد ونشر الطلب</button>
-        <button class="btn" style="background:#111;" onclick="document.getElementById('requestModal').style.display='none'">إلغاء</button>
     </div>
 </div>
 
@@ -192,86 +177,40 @@
         }).then(() => location.reload());
     }
 
-    // إصلاح كود الطلب النهائي
-    function addRequest() {
-        const cityVal = document.getElementById('rCity').value;
-        const priceVal = document.getElementById('rPrice').value;
-        const phoneVal = document.getElementById('rPhone').value;
-        const typeVal = document.getElementById('rType').value;
-
-        if(!cityVal || !priceVal || !phoneVal) return alert("المرجو ملء جميع الخانات");
-        
-        document.getElementById('loadText').innerText = "جاري إرسال طلبك...";
-        document.getElementById('loading').style.display = 'flex';
-
-        db.collection("requests").add({
-            city: cityVal,
-            price: priceVal,
-            phone: phoneVal,
-            type: typeVal,
-            userId: myID,
-            time: Date.now()
-        }).then(() => { 
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('requestModal').style.display = 'none';
-            alert("تم نشر طلبك بنجاح!"); 
-            setCat('طلبات', document.getElementById('reqCatBtn'));
-        }).catch((err) => {
-            document.getElementById('loading').style.display = 'none';
-            alert("خطأ في الاتصال، حاول مجدداً");
+    function listenToPosts() {
+        const feed = document.getElementById('feed');
+        db.collection("posts").orderBy("time", "desc").onSnapshot(snap => {
+            feed.innerHTML = "";
+            snap.forEach(doc => {
+                const data = doc.data();
+                if(currentCat !== 'الكل' && data.type !== currentCat) return;
+                let del = (data.userId === myID) ? `<button onclick="deletePost('${doc.id}')" style="background:red;border:none;color:white;padding:5px;border-radius:5px;cursor:pointer;">حذف</button>` : "";
+                feed.innerHTML += `<div class="post-card">
+                    <span class="price-tag">${data.price} DH</span>
+                    <div style="display:flex;overflow-x:auto;gap:10px;margin-bottom:10px;">${data.imgs.map(img => `<img src="${img}" style="height:150px;border-radius:10px;min-width:200px;object-fit:cover;">`).join('')}</div>
+                    <h3>${data.title}</h3><p style="font-size:14px;opacity:0.8">${data.desc}</p>
+                    <div style="display:flex;gap:10px;"><a href="tel:${data.phone}" class="btn" style="flex:1">اتصال</a>${del}</div>
+                </div>`;
+            });
         });
     }
 
-    function listenToPosts() {
-        const feed = document.getElementById('feed');
-        if(currentCat === 'طلبات') {
-            db.collection("requests").orderBy("time", "desc").onSnapshot(snap => {
-                feed.innerHTML = "<h2 style='padding:0 5%'>📋 طلبات البحث</h2>";
-                snap.forEach(doc => {
-                    const r = doc.data();
-                    let del = (r.userId === myID) ? `<button onclick="deleteReq('${doc.id}')" style="background:red;border:none;color:white;padding:3px;border-radius:5px;cursor:pointer;">حذف</button>` : "";
-                    feed.innerHTML += `<div class="request-card">
-                        <h4 style="color:var(--p);margin:0;">🚩 مطلوب ${r.type} في ${r.city}</h4>
-                        <p>الميزانية: ${r.price} DH | هاتف: ${r.phone}</p>
-                        <div style="display:flex;gap:10px;"><a href="tel:${r.phone}" class="btn" style="padding:5px;font-size:12px;">📞 اتصال</a>${del}</div>
-                    </div>`;
-                });
-            });
-        } else {
-            db.collection("posts").orderBy("time", "desc").onSnapshot(snap => {
-                feed.innerHTML = "";
-                snap.forEach(doc => {
-                    const data = doc.data();
-                    if(currentCat !== 'الكل' && data.type !== currentCat) return;
-                    let del = (data.userId === myID) ? `<button onclick="deletePost('${doc.id}')" style="background:red;border:none;color:white;padding:5px;border-radius:5px;cursor:pointer;">حذف</button>` : "";
-                    feed.innerHTML += `<div class="post-card">
-                        <span class="price-tag">${data.price} DH</span>
-                        <div style="display:flex;overflow-x:auto;gap:10px;margin-bottom:10px;">${data.imgs.map(img => `<img src="${img}" style="height:150px;border-radius:10px;min-width:200px;object-fit:cover;">`).join('')}</div>
-                        <h3>${data.title}</h3><p style="font-size:14px;opacity:0.8">${data.desc}</p>
-                        <div style="display:flex;gap:10px;"><a href="tel:${data.phone}" class="btn" style="flex:1">اتصال</a>${del}</div>
-                    </div>`;
-                });
-            });
-        }
-    }
-
     function deletePost(id) { if(confirm("حذف الإعلان؟")) db.collection("posts").doc(id).delete(); }
-    function deleteReq(id) { if(confirm("حذف الطلب؟")) db.collection("requests").doc(id).delete(); }
+    
     function setCat(cat, btn) {
         currentCat = cat;
         document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         listenToPosts();
     }
-    function showPremium() { document.getElementById('premiumPage').style.display = 'flex'; }
-    function openRequestModal() { document.getElementById('requestModal').style.display = 'flex'; }
     
-    // نصوص قانونية واحترافية (Google Ads & Morocco Law Ready)
+    function showPremium() { document.getElementById('premiumPage').style.display = 'flex'; }
+    
     function showPolicy(type) {
         const title = document.getElementById('policyTitle'), body = document.getElementById('policyBody');
         if(type === 'terms') { 
             title.innerText = "شروط الاستخدام"; 
-            body.innerHTML = "يرجى قراءة شروط الاستخدام بعناية. باستخدامك لـ Diablo Hub، فإنك توافق على الالتزام بالقواعد التالية: <br>1. <b>دقة المعلومات:</b> يجب أن تكون جميع العقارات والطلبات المنشورة حقيقية وموجودة في الواقع.<br>2. <b>المحتوى:</b> يمنع نشر أي محتوى يروج للعنف، التمييز، أو يخالف القوانين الجاري بها العمل في المملكة المغربية.<br>3. <b>المسؤولية:</b> المستخدم مسؤول بالكامل عن صحة أرقام الهاتف والمعلومات المقدمة.<br>4. <b>التعديلات:</b> نحتفظ بالحق في حذف أي إعلان يتبين أنه مضلل أو وهمي دون سابق إنذار."; 
+            body.innerHTML = "يرجى قراءة شروط الاستخدام بعناية. باستخدامك لـ Diablo Hub، فإنك توافق على الالتزام بالقواعد التالية: <br>1. <b>دقة المعلومات:</b> يجب أن تكون جميع العقارات المنشورة حقيقية وموجودة في الواقع.<br>2. <b>المحتوى:</b> يمنع نشر أي محتوى يروج للعنف، التمييز، أو يخالف القوانين الجاري بها العمل في المملكة المغربية.<br>3. <b>المسؤولية:</b> المستخدم مسؤول بالكامل عن صحة أرقام الهاتف والمعلومات المقدمة.<br>4. <b>التعديلات:</b> نحتفظ بالحق في حذف أي إعلان يتبين أنه مضلل أو وهمي دون سابق إنذار."; 
         }
         else if(type === 'privacy') { 
             title.innerText = "سياسة الخصوصية"; 
@@ -286,5 +225,4 @@
     }
 </script>
 </body>
-      </html>
-  
+</html>
