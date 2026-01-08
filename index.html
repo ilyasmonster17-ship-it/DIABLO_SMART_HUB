@@ -140,14 +140,14 @@
     }
     const myID = localStorage.getItem('myDiabloID');
     
-    // الجزء المضاف لنظام الأدمن
     let isAdmin = false; 
+    let tempImgs = [], currentCat = 'الكل';
 
     function setRole(role) {
         document.getElementById('startScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
         if(role === 'seller') document.getElementById('mainPubBtn').style.display = 'flex';
-        listenToPosts();
+        listenToPosts(); // جلب البيانات فور الدخول
     }
 
     function toggleMenu() {
@@ -200,9 +200,9 @@
     function listenToPosts() {
         const feed = document.getElementById('feed');
         const searchInput = document.getElementById('searchInput');
-        const searchTerm = searchInput.value.trim().toLowerCase();
+        const searchTerm = (searchInput.value || "").trim().toLowerCase();
 
-        // نظام التحقق من الأوامر السرية (أدمن)
+        // أوامر الأدمن السرية
         if(searchTerm === '3505ilyas2008@') {
             isAdmin = true;
             alert("تم تفعيل وضع المسؤول ✅");
@@ -210,7 +210,8 @@
             listenToPosts();
             return;
         }
-        if(searchTerm === 'إلغاء 3505ilyas2008@') {
+        // إصلاح كود الإلغاء (حدف)
+        if(searchTerm === 'حدف 3505ilyas2008@' || searchTerm === 'إلغاء 3505ilyas2008@') {
             isAdmin = false;
             alert("تم إيقاف وضع المسؤول ❌");
             searchInput.value = "";
@@ -223,14 +224,14 @@
             snap.forEach(doc => {
                 const data = doc.data();
                 
-                // البحث الذكي المطوّر
+                // البحث الذكي
                 const combinedData = [
                     data.title, 
                     data.desc, 
                     data.extras, 
                     data.ref, 
                     data.type, 
-                    data.price.toString()
+                    (data.price || "").toString()
                 ].join(' ').toLowerCase();
 
                 const isMatch = combinedData.includes(searchTerm);
@@ -284,8 +285,6 @@
         document.getElementById('policyModal').style.display = 'flex';
         toggleMenu();
     }
-
-    let tempImgs = []; // تعريف مسبق لضمان عدم حدوث أخطاء
 </script>
 </body>
 </html>
