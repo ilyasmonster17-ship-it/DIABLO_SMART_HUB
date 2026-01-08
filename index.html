@@ -19,6 +19,12 @@
         .side-menu{position:fixed;top:0;right:-100%;width:280px;height:100%;background:var(--card);z-index:9500;transition:0.4s;padding:20px;box-sizing:border-box;border-left:1px solid var(--border);overflow-y:auto;}
         .side-menu.active{right:0;}
         .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);display:none;z-index:9400;}
+        
+        /* Search Box Style */
+        .search-container{padding:10px 5%; background:var(--bg);}
+        .search-box{width:100%; padding:12px 15px; border-radius:10px; border:1px solid var(--border); background:var(--card); color:var(--t); font-family:'Cairo'; outline:none; transition:0.3s;}
+        .search-box:focus{border-color:var(--p); box-shadow: 0 0 5px rgba(255,69,0,0.3);}
+
         .categories{display:flex;overflow-x:auto;gap:10px;padding:10px 5%;white-space:nowrap;}
         .cat-btn{background:var(--card);border:1px solid var(--border);color:var(--t);padding:8px 15px;border-radius:20px;cursor:pointer;}
         .cat-btn.active{background:var(--p);color:white;border-color:var(--p);}
@@ -52,6 +58,10 @@
         <strong style="color:var(--p)">DIABLO HUB</strong>
         <button onclick="toggleTheme()" style="background:none;border:none;color:var(--p);font-size:20px;"><i class="fas fa-moon" id="themeIcon"></i></button>
     </header>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-box" placeholder="ابحث عن منزل، شقة، مدينة..." oninput="listenToPosts()">
+    </div>
 
     <div class="categories">
         <button class="cat-btn active" onclick="setCat('الكل', this)">الكل</button>
@@ -179,11 +189,19 @@
 
     function listenToPosts() {
         const feed = document.getElementById('feed');
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
         db.collection("posts").orderBy("time", "desc").onSnapshot(snap => {
             feed.innerHTML = "";
             snap.forEach(doc => {
                 const data = doc.data();
+                const titleMatch = data.title.toLowerCase().includes(searchTerm);
+                const descMatch = data.desc.toLowerCase().includes(searchTerm);
+                
+                // تصفية بناءً على التصنيف + كلمة البحث
                 if(currentCat !== 'الكل' && data.type !== currentCat) return;
+                if(searchTerm && !titleMatch && !descMatch) return;
+
                 let del = (data.userId === myID) ? `<button onclick="deletePost('${doc.id}')" style="background:red;border:none;color:white;padding:5px;border-radius:5px;cursor:pointer;">حذف</button>` : "";
                 feed.innerHTML += `<div class="post-card">
                     <span class="price-tag">${data.price} DH</span>
@@ -225,4 +243,5 @@
     }
 </script>
 </body>
-</html>
+    </html>
+    
