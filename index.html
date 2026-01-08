@@ -84,8 +84,8 @@
 <div id="policyModal">
     <div class="modal-content">
         <h3 id="policyTitle" style="color:var(--p)"></h3>
-        <div id="policyBody" style="font-size:14px; line-height:1.6;"></div>
-        <button class="btn" onclick="document.getElementById('policyModal').style.display='none'">فهمت ذلك</button>
+        <div id="policyBody" style="font-size:14px; line-height:1.8; text-align: justify;"></div>
+        <button class="btn" onclick="document.getElementById('policyModal').style.display='none'">إغلاق</button>
     </div>
 </div>
 
@@ -192,31 +192,33 @@
         }).then(() => location.reload());
     }
 
+    // إصلاح كود الطلب النهائي
     function addRequest() {
-        const city = document.getElementById('rCity').value, price = document.getElementById('rPrice').value, phone = document.getElementById('rPhone').value;
-        if(!city || !price || !phone) return alert("أكمل البيانات");
+        const cityVal = document.getElementById('rCity').value;
+        const priceVal = document.getElementById('rPrice').value;
+        const phoneVal = document.getElementById('rPhone').value;
+        const typeVal = document.getElementById('rType').value;
+
+        if(!cityVal || !priceVal || !phoneVal) return alert("المرجو ملء جميع الخانات");
         
         document.getElementById('loadText').innerText = "جاري إرسال طلبك...";
         document.getElementById('loading').style.display = 'flex';
 
-        // حل مشكلة قائمة الطلب: التأكد من أسماء الحقول بدقة
         db.collection("requests").add({
-            city: city,
-            price: price,
-            phone: phone,
-            type: document.getElementById('rType').value,
+            city: cityVal,
+            price: priceVal,
+            phone: phoneVal,
+            type: typeVal,
             userId: myID,
             time: Date.now()
         }).then(() => { 
             document.getElementById('loading').style.display = 'none';
             document.getElementById('requestModal').style.display = 'none';
             alert("تم نشر طلبك بنجاح!"); 
-            // التوجه فورا لقسم الطلبات لرؤية النتيجة
             setCat('طلبات', document.getElementById('reqCatBtn'));
         }).catch((err) => {
             document.getElementById('loading').style.display = 'none';
-            console.error("Error: ", err);
-            alert("حدث خطأ، يرجى المحاولة مرة أخرى.");
+            alert("خطأ في الاتصال، حاول مجدداً");
         });
     }
 
@@ -263,15 +265,26 @@
     }
     function showPremium() { document.getElementById('premiumPage').style.display = 'flex'; }
     function openRequestModal() { document.getElementById('requestModal').style.display = 'flex'; }
+    
+    // نصوص قانونية واحترافية (Google Ads & Morocco Law Ready)
     function showPolicy(type) {
         const title = document.getElementById('policyTitle'), body = document.getElementById('policyBody');
-        if(type === 'terms') { title.innerText = "شروط الاستخدام"; body.innerHTML = "• العقارات حقيقية.<br>• لا محتوى مخالف."; }
-        else if(type === 'privacy') { title.innerText = "سياسة الخصوصية"; body.innerHTML = "• نحفظ الهوية لإدارة إعلاناتك."; }
-        else { title.innerText = "إخلاء المسؤولية"; body.innerHTML = "• نحن وسيط ولسنا مسؤولين عن المعاملات."; }
+        if(type === 'terms') { 
+            title.innerText = "شروط الاستخدام"; 
+            body.innerHTML = "يرجى قراءة شروط الاستخدام بعناية. باستخدامك لـ Diablo Hub، فإنك توافق على الالتزام بالقواعد التالية: <br>1. <b>دقة المعلومات:</b> يجب أن تكون جميع العقارات والطلبات المنشورة حقيقية وموجودة في الواقع.<br>2. <b>المحتوى:</b> يمنع نشر أي محتوى يروج للعنف، التمييز، أو يخالف القوانين الجاري بها العمل في المملكة المغربية.<br>3. <b>المسؤولية:</b> المستخدم مسؤول بالكامل عن صحة أرقام الهاتف والمعلومات المقدمة.<br>4. <b>التعديلات:</b> نحتفظ بالحق في حذف أي إعلان يتبين أنه مضلل أو وهمي دون سابق إنذار."; 
+        }
+        else if(type === 'privacy') { 
+            title.innerText = "سياسة الخصوصية"; 
+            body.innerHTML = "نحن نهتم بخصوصيتك وفقاً للقانون المغربي 08-09 المتعلق بحماية المعطيات الشخصية:<br>1. <b>البيانات التي نجمعها:</b> نجمع فقط المعلومات التي تقدمها طوعاً (الاسم، رقم الهاتف، الموقع) لغرض تسهيل عملية التواصل العقاري.<br>2. <b>استخدام البيانات:</b> نستخدم معرف المتصفح (localStorage) لتمكينك من إدارة وحذف إعلاناتك الخاصة فقط.<br>3. <b>ملفات تعريف الارتباط:</b> قد نستخدم تقنيات بسيطة لتحسين تجربة المستخدم وتوافق الموقع مع Google Ads.<br>4. <b>عدم البيع:</b> نحن نؤكد التزامنا بعدم بيع بياناتك لأي طرف ثالث لأغراض تسويقية غير مصرح بها."; 
+        }
+        else { 
+            title.innerText = "إخلاء المسؤولية"; 
+            body.innerHTML = "تنبيه هام للمستخدمين:<br>1. <b>الوساطة:</b> منصة Diablo Hub هي منصة إعلانية وسيطة فقط، ولا تتدخل في عمليات البيع، الشراء، أو الكراء بين الأطراف.<br>2. <b>المعاينات:</b> ننصح جميع المستخدمين بمعاينة العقارات على أرض الواقع والتأكد من الوثائق القانونية قبل دفع أي مبالغ مالية.<br>3. <b>الأمن المالي:</b> المنصة غير مسؤولة عن أي احتيال قد يقع خارج نطاق الموقع، ونحن لا نطلب أبداً معلومات بنكية عبر المنصة.<br>4. <b>الروابط الخارجية:</b> أي روابط تؤدي لمواقع أخرى هي على مسؤولية المستخدم الخاصة."; 
+        }
         document.getElementById('policyModal').style.display = 'flex';
         toggleMenu();
     }
 </script>
 </body>
-            </html>
+    </html>
     
