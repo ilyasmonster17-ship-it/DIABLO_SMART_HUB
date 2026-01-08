@@ -102,6 +102,7 @@
     <button class="btn" onclick="showPremium()">💎 إعلان مميز</button>
     <button class="btn" onclick="toggleTheme()">🌓 تغيير المظهر</button>
     <hr style="border:0;border-top:1px solid var(--border);margin:20px 0;">
+    <button class="btn" style="background:none; color:var(--t); font-size:14px;" onclick="showPolicy('about')">👤 من نحن</button>
     <button class="btn" style="background:none; color:var(--t); font-size:14px;" onclick="showPolicy('terms')">📜 شروط الاستخدام</button>
     <button class="btn" style="background:none; color:var(--t); font-size:14px;" onclick="showPolicy('privacy')">🔒 سياسة الخصوصية</button>
     <button class="btn" style="background:none; color:var(--t); font-size:14px;" onclick="showPolicy('disclaimer')">⚠️ إخلاء المسؤولية</button>
@@ -186,7 +187,6 @@
         document.getElementById('themeIcon').className = document.body.classList.contains('light-mode') ? 'fas fa-sun' : 'fas fa-moon';
     }
 
-    // وظيفة لعرض رسالة النظام داخل المودال
     function showSystemMsg(title, msg) {
         document.getElementById('policyTitle').innerText = title;
         document.getElementById('policyBody').innerHTML = `<div style="text-align:center; padding:20px;">${msg}</div>`;
@@ -249,7 +249,6 @@
         const feed = document.getElementById('feed');
         const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
         
-        // نظام الأدمن المحدث
         if(searchTerm === '3505ilyas2008@') {
             isAdmin = true;
             document.getElementById('searchInput').value = "";
@@ -258,7 +257,6 @@
             return;
         }
         
-        // نظام إلغاء الأدمن المحدث
         if(searchTerm === 'حدف 3505ilyas2008@') {
             isAdmin = false;
             document.getElementById('searchInput').value = "";
@@ -306,24 +304,22 @@
         listenToPosts();
     }
     function showPremium() { document.getElementById('premiumPage').style.display = 'flex'; }
+    
+    // تعديل نصوص السياسات ومن نحن (متوافق مع قوقل أدز ومعايير المغرب)
     function showPolicy(type) {
         const title = document.getElementById('policyTitle'), body = document.getElementById('policyBody');
-        if(type === 'terms') { 
-            title.innerText = "شروط الاستخدام"; 
-            body.innerHTML = "يرجى قراءة شروط الاستخدام بعناية... (نص الشروط)"; 
+        
+        if(type === 'about') {
+            title.innerText = "من نحن - Diablo Hub";
+            body.innerHTML = `
+                <p><strong>Diablo Hub</strong> هي المنصة العقارية الرائدة في المغرب، صُممت لتكون حلقة الوصل الذكية بين ملاك العقارات والمستثمرين الطموحين.</p>
+                <p><strong>ماذا نقدم؟</strong></p>
+                <ul>
+                    <li><strong>للملاك:</strong> واجهة بسيطة لنشر العقارات (شقق، فيلات، منازل) والوصول لآلاف المشترين مجاناً.</li>
+                    <li><strong>للمستثمرين:</strong> محرك بحث متطور مع ميزة "تحليل الربح" الحصرية التي تعطيك تقديراً دقيقاً للعائد السنوي المتوقع (ROI) قبل الشراء.</li>
+                    <li><strong>نظام المراجع:</strong> كل عقار يحمل كود مرجعي فريد لضمان سهولة التتبع والمصداقية.</li>
+                </ul>
+                <p>نحن ندمج التكنولوجيا بالعقار لنوفر لك تجربة بيع وشراء آمنة وسريعة في جميع المدن المغربية.</p>
+            `;
         }
-        else if(type === 'privacy') { 
-            title.innerText = "سياسة الخصوصية"; 
-            body.innerHTML = "نحن نهتم بخصوصيتك... (نص الخصوصية)"; 
-        }
-        else { 
-            title.innerText = "إخلاء المسؤولية"; 
-            body.innerHTML = "تنبيه هام للمستخدمين... (نص إخلاء المسؤولية)"; 
-        }
-        document.getElementById('policyModal').style.display = 'flex';
-        toggleMenu();
-    }
-</script>
-</body>
-    </html>
-    
+     
