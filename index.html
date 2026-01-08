@@ -39,12 +39,11 @@
         .loading-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.9);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:20000;color:white;}
         .publish-btn-main{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);width:60px;height:60px;background:var(--p);border-radius:50%;display:none;align-items:center;justify-content:center;z-index:9000;border:none;color:white;font-size:30px;box-shadow:0 4px 15px rgba(255,69,0,0.4);}
         .whatsapp-btn{background:#25d366; color:white; border-radius:50%; width:60px; height:60px; display:flex; align-items:center; justify-content:center; font-size:30px; margin:20px auto; text-decoration:none;}
-        .policy-text{font-size:14px; line-height:1.6; text-align:right;}
     </style>
 </head>
 <body>
 
-<div id="loading" class="loading-overlay"><i class="fas fa-spinner fa-spin" style="font-size:40px;color:var(--p)"></i><p>جاري معالجة البيانات...</p></div>
+<div id="loading" class="loading-overlay"><i class="fas fa-spinner fa-spin" style="font-size:40px;color:var(--p)"></i><p>جاري النشر بسرعة...</p></div>
 
 <div id="startScreen">
     <h1 style="color:var(--p);font-size:40px;">DIABLO HUB</h1>
@@ -67,7 +66,7 @@
         <button class="cat-btn" onclick="setCat('شقق', this)">🏙️ شقق</button>
         <button class="cat-btn" onclick="setCat('فيلات', this)">🏰 فيلات</button>
         <button class="cat-btn" onclick="setCat('منازل', this)">🏡 منازل</button>
-        <button class="cat-btn" onclick="setCat('طلبات', this)">📋 طلبات البحث</button>
+        <button class="cat-btn" id="reqCatBtn" onclick="setCat('طلبات', this)">📋 طلبات البحث</button>
         <button class="cat-btn" style="background:var(--gold);color:black;font-weight:bold;" onclick="showPremium()">✨ تميز الآن</button>
     </div>
 
@@ -78,7 +77,7 @@
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 <div class="side-menu" id="sideMenu">
     <h2 style="color:var(--p)">DIABLO HUB</h2>
-    <hr style="border:0;border-top:1px solid var(--border);margin:10px 0;">
+    <hr style="border:0;border-top:1px solid var(--border);margin:20px 0;">
     <button class="btn" onclick="location.reload()">🏠 الرئيسية</button>
     <button class="btn" style="background:#222;" onclick="openRequestModal()">➕ انشر طلب شراء</button>
     <button class="btn" onclick="showPremium()">💎 إعلان مميز</button>
@@ -92,7 +91,7 @@
 <div id="policyModal">
     <div class="modal-content">
         <h3 id="policyTitle" style="color:var(--p)"></h3>
-        <div id="policyBody" class="policy-text"></div>
+        <div id="policyBody" style="font-size:14px; line-height:1.6;"></div>
         <button class="btn" onclick="document.getElementById('policyModal').style.display='none'">فهمت ذلك</button>
     </div>
 </div>
@@ -127,7 +126,8 @@
 <div id="premiumPage">
     <div class="modal-content" style="text-align:center;">
         <h2 style="color:var(--gold)">تميز الآن ✨</h2>
-        <p>اجعل إعلانك يظهر في المقدمة دائماً بلون ذهبي جذاب.</p>
+        <p>اجعل إعلانك في المقدمة دائماً بلون جذاب.</p>
+        <p style="font-weight:bold; color:var(--p);">سعر المنشور المميز: 1$</p>
         <p>لتفعيل التميز، تواصل معنا عبر واتساب:</p>
         <a href="https://wa.me/212695067840" target="_blank" class="whatsapp-btn"><i class="fab fa-whatsapp"></i></a>
         <button class="btn" onclick="document.getElementById('premiumPage').style.display='none'">إغلاق</button>
@@ -172,8 +172,17 @@
             const reader = new FileReader();
             reader.readAsDataURL(f);
             reader.onload = (e) => {
-                tempImgs.push(e.target.result);
-                document.getElementById('preGrid').innerHTML += `<img src="${e.target.result}" style="width:60px;height:60px;border-radius:5px;object-fit:cover;">`;
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = 500; canvas.height = (img.height / img.width) * 500;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const compressed = canvas.toDataURL('image/jpeg', 0.6);
+                    tempImgs.push(compressed);
+                    document.getElementById('preGrid').innerHTML += `<img src="${compressed}" style="width:60px;height:60px;border-radius:5px;object-fit:cover;">`;
+                };
             };
         }
     }
@@ -192,10 +201,16 @@
     function addRequest() {
         const city = document.getElementById('rCity').value, price = document.getElementById('rPrice').value, phone = document.getElementById('rPhone').value;
         if(!city || !price || !phone) return alert("أكمل البيانات");
+        document.getElementById('loading').style.display = 'flex';
         db.collection("requests").add({
             city, price, phone, type: document.getElementById('rType').value,
             userId: myID, time: Date.now()
-        }).then(() => { alert("تم نشر طلبك!"); location.reload(); });
+        }).then(() => { 
+            alert("تم نشر طلبك!"); 
+            document.getElementById('requestModal').style.display = 'none';
+            document.getElementById('loading').style.display = 'none';
+            setCat('طلبات', document.getElementById('reqCatBtn'));
+        });
     }
 
     function listenToPosts() {
@@ -241,20 +256,11 @@
     }
     function showPremium() { document.getElementById('premiumPage').style.display = 'flex'; }
     function openRequestModal() { document.getElementById('requestModal').style.display = 'flex'; }
-    
     function showPolicy(type) {
-        const title = document.getElementById('policyTitle');
-        const body = document.getElementById('policyBody');
-        if(type === 'terms') {
-            title.innerText = "شروط الاستخدام";
-            body.innerHTML = "• يجب أن تكون جميع العقارات المعروضة حقيقية.<br>• يمنع نشر محتوى غير لائق أو مخالف للقانون المغربي.<br>• المنصة وسيط فقط ولا تضمن صحة جميع المعاملات.";
-        } else if(type === 'privacy') {
-            title.innerText = "سياسة الخصوصية";
-            body.innerHTML = "• نحن نحفظ معرف المتصفح فقط لتمكينك من إدارة إعلاناتك.<br>• لا نقوم ببيع بياناتك الشخصية لأي جهة ثالثة.<br>• يتم استخدام ملفات تعريف الارتباط لتحسين تجربة المستخدم.";
-        } else {
-            title.innerText = "إخلاء المسؤولية";
-            body.innerHTML = "• Diablo Hub لا تتحمل أي مسؤولية عن عمليات النصب أو الاحتيال.<br>• يرجى معاينة العقار على أرض الواقع قبل دفع أي مبالغ.<br>• التعامل يكون مباشرة بين البائع والمشتري.";
-        }
+        const title = document.getElementById('policyTitle'), body = document.getElementById('policyBody');
+        if(type === 'terms') { title.innerText = "شروط الاستخدام"; body.innerHTML = "• العقارات حقيقية.<br>• لا محتوى مخالف."; }
+        else if(type === 'privacy') { title.innerText = "سياسة الخصوصية"; body.innerHTML = "• نحفظ الهوية لإدارة إعلاناتك."; }
+        else { title.innerText = "إخلاء المسؤولية"; body.innerHTML = "• نحن وسيط ولسنا مسؤولين عن المعاملات."; }
         document.getElementById('policyModal').style.display = 'flex';
         toggleMenu();
     }
