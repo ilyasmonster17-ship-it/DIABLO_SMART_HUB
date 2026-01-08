@@ -13,28 +13,21 @@
         :root{--p:#ff4500;--bg:#050505;--card:#111;--t:#fff;--border:#222;--gold:#ffd700;}
         .light-mode{--bg:#f5f5f5;--card:#fff;--t:#222;--border:#ddd;}
         body{background:var(--bg);color:var(--t);font-family:'Cairo',sans-serif;margin:0;padding-bottom:100px;overflow-x:hidden;}
-        
         #startScreen{display:flex;position:fixed;inset:0;background:var(--bg);z-index:9999;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;}
         #mainApp{display:none;}
-        
         header{padding:15px 5%;display:flex;justify-content:space-between;align-items:center;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:1000;}
-        
         .side-menu{position:fixed;top:0;right:-100%;width:280px;height:100%;background:var(--card);z-index:9500;transition:0.4s;padding:20px;box-sizing:border-box;border-left:1px solid var(--border);overflow-y:auto;}
         .side-menu.active{right:0;}
         .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);display:none;z-index:9400;}
-        
         .categories{display:flex;overflow-x:auto;gap:10px;padding:10px 5%;white-space:nowrap;}
         .cat-btn{background:var(--card);border:1px solid var(--border);color:var(--t);padding:8px 15px;border-radius:20px;cursor:pointer;}
         .cat-btn.active{background:var(--p);color:white;border-color:var(--p);}
-        
         .post-card{background:var(--card);border:1px solid var(--border);border-radius:15px;margin:15px 5%;padding:15px;position:relative;}
         .request-card{background:linear-gradient(45deg, #1a1a1a, #222); border:1px dashed var(--p); border-radius:15px; margin:15px 5%; padding:15px;}
         .price-tag{position:absolute;top:10px;left:10px;background:#25d366;color:white;padding:3px 12px;border-radius:20px;font-weight:bold;}
-        
         .btn{background:var(--p);color:white;border:none;padding:12px;border-radius:8px;cursor:pointer;font-weight:bold;width:100%;margin-top:10px;text-align:center;text-decoration:none;display:block;}
         #publishModal, #premiumPage, #requestModal, #policyModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:10001;align-items:center;justify-content:center;padding:20px;}
         .modal-content{background:var(--card);padding:20px;border-radius:15px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;}
-        
         input,textarea,select{width:100%;padding:12px;margin:8px 0;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--t);box-sizing:border-box;}
         .loading-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.9);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:20000;color:white;}
         .publish-btn-main{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);width:60px;height:60px;background:var(--p);border-radius:50%;display:none;align-items:center;justify-content:center;z-index:9000;border:none;color:white;font-size:30px;box-shadow:0 4px 15px rgba(255,69,0,0.4);}
@@ -77,7 +70,7 @@
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 <div class="side-menu" id="sideMenu">
     <h2 style="color:var(--p)">DIABLO HUB</h2>
-    <hr style="border:0;border-top:1px solid var(--border);margin:20px 0;">
+    <hr style="border:0;border-top:1px solid var(--border);margin:10px 0;">
     <button class="btn" onclick="location.reload()">🏠 الرئيسية</button>
     <button class="btn" style="background:#222;" onclick="openRequestModal()">➕ انشر طلب شراء</button>
     <button class="btn" onclick="showPremium()">💎 إعلان مميز</button>
@@ -196,10 +189,7 @@
             title: t, price: p, desc: document.getElementById('pDesc').value,
             type: document.getElementById('pType').value, phone: document.getElementById('pPhone').value,
             imgs: tempImgs, userId: myID, time: Date.now()
-        }).then(() => location.reload()).catch(() => {
-            document.getElementById('loading').style.display = 'none';
-            alert("فشل النشر، حاول ثانية");
-        });
+        }).then(() => location.reload());
     }
 
     function addRequest() {
@@ -209,18 +199,24 @@
         document.getElementById('loadText').innerText = "جاري إرسال طلبك...";
         document.getElementById('loading').style.display = 'flex';
 
+        // حل مشكلة قائمة الطلب: التأكد من أسماء الحقول بدقة
         db.collection("requests").add({
-            city: city, price: price, phone: phone, 
+            city: city,
+            price: price,
+            phone: phone,
             type: document.getElementById('rType').value,
-            userId: myID, time: Date.now()
+            userId: myID,
+            time: Date.now()
         }).then(() => { 
             document.getElementById('loading').style.display = 'none';
             document.getElementById('requestModal').style.display = 'none';
-            alert("تم نشر طلبك!"); 
+            alert("تم نشر طلبك بنجاح!"); 
+            // التوجه فورا لقسم الطلبات لرؤية النتيجة
             setCat('طلبات', document.getElementById('reqCatBtn'));
         }).catch((err) => {
             document.getElementById('loading').style.display = 'none';
-            alert("حدث خطأ في الاتصال، تأكد من الإنترنت");
+            console.error("Error: ", err);
+            alert("حدث خطأ، يرجى المحاولة مرة أخرى.");
         });
     }
 
@@ -277,5 +273,5 @@
     }
 </script>
 </body>
-    </html>
+            </html>
     
