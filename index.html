@@ -1,701 +1,168 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>DIABLO HUB</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Cairo&display=swap');
-  * {
-    box-sizing: border-box;
-  }
-  body {
-    margin: 0; padding: 0;
-    font-family: 'Cairo', sans-serif;
-    background-color: #000;
-    color: #fff;
-    direction: rtl;
-    user-select: none;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  a {
-    color: #ff5e00;
-    text-decoration: none;
-  }
-  button, input, select {
-    font-family: 'Cairo', sans-serif;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الموقع الخاص بك</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- CSS الخاص بالموقع -->
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-  header {
-    background-color: #111;
-    height: 45px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 15px;
-    border-bottom: 1px solid #222;
-    position: fixed;
-    top:0; left:0; right:0;
-    z-index: 11;
-  }
-  header h1 {
-    color: #ff4b00;
-    font-weight: 900;
-    font-size: 20px;
-    margin: 0;
-    user-select: none;
-  }
-  #menuToggle {
-    display: flex;
-    flex-direction: column;
-    cursor: pointer;
-    width: 26px;
-    height: 20px;
-    justify-content: space-between;
-  }
-  #menuToggle span {
-    display: block;
-    height: 3px;
-    background: #ff4b00;
-    border-radius: 3px;
-  }
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+        }
 
-  /* Sidebar Menu */
-  #sidebar {
-    position: fixed;
-    top: 45px; /* under header */
-    right: 0;
-    bottom: 0;
-    width: 260px;
-    background-color: #111;
-    box-shadow: -4px 0 15px rgba(255, 75, 0, 0.25);
-    padding: 20px;
-    overflow-y: auto;
-    transform: translateX(260px);
-    transition: transform 0.3s ease;
-    z-index: 10;
-  }
-  #sidebar.open {
-    transform: translateX(0);
-  }
-  #sidebar h2 {
-    margin-top: 0;
-    font-weight: 900;
-    color: #ff4b00;
-    font-size: 25px;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  #sidebar button.menu-btn {
-    width: 100%;
-    margin-bottom: 12px;
-    border-radius: 12px;
-    padding: 12px 0;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    user-select: none;
-    transition: background-color 0.3s;
-  }
-  #sidebar button.menu-btn.primary {
-    background-color: #ff4b00;
-    color: #fff;
-    font-weight: 700;
-  }
-  #sidebar button.menu-btn.primary:hover {
-    background-color: #e04400;
-  }
-  #sidebar button.menu-btn.secondary {
-    background-color: #222;
-    color: #999;
-  }
-  #sidebar button.menu-btn.secondary:hover {
-    background-color: #333;
-    color: #ff4b00;
-  }
-  #sidebar .info-links button {
-    background: none;
-    border: none;
-    color: #bbb;
-    text-align: start;
-    padding: 8px 0;
-    font-size: 16px;
-    cursor: pointer;
-    width: 100%;
-    border-bottom: 0.5px solid #333;
-    user-select: none;
-  }
-  #sidebar .info-links button:hover {
-    color: #ff4b00;
-  }
+        h1, h2 {
+            color: #495057;
+        }
 
-  main {
-    padding: 70px 15px 90px 15px;
-    max-width: 360px;
-    margin: auto;
-  }
-  main h2 {
-    font-weight: 900;
-    color: #ff4b00;
-    font-size: 26px;
-    margin-bottom: 8px;
-    text-align: center;
-    user-select: none;
-  }
-  main p.subtitle {
-    color: #ccc;
-    font-size: 15px;
-    text-align: center;
-    margin: 8px 0 20px 0;
-    user-select: none;
-  }
+        .btn {
+            border-radius: 25px;
+            font-weight: bold;
+        }
 
-  /* Buttons to browse */
-  #browseButtons {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  #browseButtons button {
-    flex: 1 1 48%;
-    background-color: #ff4b00;
-    border: none;
-    border-radius: 15px;
-    padding: 12px 0;
-    color: white;
-    font-weight: 700;
-    cursor: pointer;
-    user-select: none;
-    transition: background-color 0.25s ease;
-  }
-  #browseButtons button:hover {
-    background-color: #e04300;
-  }
-  #browseButtons button.secondary {
-    background-color: transparent;
-    border: 2.5px solid #ff4b00;
-    color: #ff4b00;
-  }
-  #browseButtons button.secondary:hover {
-    background-color: #ff4b00;
-    color: #fff;
-  }
+        #welcome-page {
+            text-align: center;
+        }
 
-  /* Category nav */
-  #catNav {
-    display: flex;
-    gap: 6px;
-    overflow-x: auto;
-    margin-bottom: 25px;
-    padding-bottom: 10px;
-    user-select: none;
-  }
-  #catNav button {
-    flex: 0 0 auto;
-    background: #222;
-    border: none;
-    padding: 8px 14px;
-    border-radius: 20px;
-    color: #ccc;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 16px;
-    white-space: nowrap;
-    transition: background-color 0.2s, color 0.2s;
-  }
-  #catNav button.active, #catNav button:hover {
-    background-color: #ff4b00;
-    color: #fff;
-  }
-
-  /* Ads List */
-  #adsList {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    margin-bottom: 90px;
-  }
-  .ad-item {
-    background-color: #222;
-    padding: 14px 15px;
-    border-radius: 15px;
-    font-size: 16px;
-    color: white;
-    box-shadow: 0 0 8px #ff4b00aa;
-  }
-  .ad-item strong {
-    color: #ff4b00;
-  }
-  .ad-item a {
-    color: #ff4b00;
-    font-weight: 700;
-  }
-
-  /* Floating + add button */
-  #addAdBtn {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #ff4b00;
-    border: none;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    font-size: 42px;
-    color: white;
-    font-weight: bold;
-    box-shadow: 0 0 15px 3px #ff4b00bb;
-    cursor: pointer;
-    user-select: none;
-    z-index: 20;
-  }
-  #addAdBtn:hover {
-    background-color: #e04300;
-  }
-
-  /* Modal overlays */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    z-index: 100;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-color: rgba(0,0,0,0.85);
-    backdrop-filter: blur(10px);
-    justify-content: center;
-    align-items: center;
-  }
-  .modal-overlay.active {
-    display: flex;
-  }
-
-  /* Modal window */
-  .modal {
-    background-color: #111;
-    border-radius: 20px;
-    max-width: 360px;
-    width: 95vw;
-    max-height: 85vh;
-    overflow-y: auto;
-    box-shadow: 0 0 25px #ff4b00bb;
-    padding: 25px 20px 20px 20px;
-    color: white;
-    user-select: none;
-  }
-  .modal h2 {
-    font-weight: 900;
-    font-size: 23px;
-    color: #ff4b00;
-    margin-top: 0;
-    margin-bottom: 18px;
-  }
-  .modal p, .modal pre {
-    margin: 5px 0 10px 0;
-    line-height: 1.45em;
-    font-size: 15px;
-    color: #ccc;
-    white-space: pre-line;
-  }
-  .modal strong, .modal b {
-    color: #ff4b00;
-  }
-  .modal button.close {
-    all: unset;
-    display: block;
-    cursor: pointer;
-    margin: 28px auto 10px auto;
-    background-color: #ff4b00;
-    color: white;
-    font-weight: 900;
-    text-align: center;
-    padding: 13px 18px;
-    border-radius: 14px;
-    width: 100%;
-    user-select: none;
-  }
-  .modal button.close:hover {
-    background-color: #e04300;
-  }
-  
-  /* Form inside modal */
-  form#adForm {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-  form#adForm input, form#adForm select {
-    background-color: #222;
-    border: none;
-    border-radius: 12px;
-    padding: 12px 14px;
-    font-size: 17px;
-    color: white;
-  }
-  form#adForm input::placeholder,
-  form#adForm select option {
-    color: #999;
-  }
-  form#adForm button[type="submit"] {
-    background-color: #ff4b00;
-    border: none;
-    color: white;
-    margin-top: 8px;
-    padding: 14px 0;
-    font-weight: 900;
-    font-size: 18px;
-    border-radius: 18px;
-    cursor: pointer;
-    user-select: none;
-  }
-  form#adForm button[type="submit"]:hover {
-    background-color: #e04300;
-  }
-  form#adForm button.cancel {
-    all: unset;
-    margin-top: 12px;
-    color: #ccc;
-    text-align: center;
-    cursor: pointer;
-    user-select: none;
-    font-weight: 600;
-  }
-  form#adForm button.cancel:hover {
-    color: #ff4b00;
-  }
-
-  /* Scrollbar for container */
-  ::-webkit-scrollbar {
-    width: 7px;
-    height: 7px;
-  }
-  ::-webkit-scrollbar-track {
-    background: #111;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: #ff4b00;
-    border-radius: 10px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: #e04300;
-  }
-
-  /* Responsive */
-  @media (min-width: 600px) {
-    main {
-      max-width: 480px;
-      padding: 80px 30px 90px 30px;
-    }
-    #sidebar {
-      width: 320px;
-    }
-    .modal {
-      max-width: 400px;
-    }
-  }
-</style>
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+        #posts-list .list-group-item {
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
+    <div class="container mt-5">
+        <!-- الصفحة الأولى: اختيار الدور -->
+        <div id="welcome-page">
+            <h1 class="text-center mb-4">مرحباً بك في الموقع</h1>
+            <p class="text-center mb-4">هل أنت مستثمر أو مالك؟</p>
+            <div class="text-center">
+                <button class="btn btn-primary btn-lg me-3" onclick="selectRole('investor')">مستثمر</button>
+                <button class="btn btn-secondary btn-lg" onclick="selectRole('owner')">مالك</button>
+            </div>
+        </div>
 
-<header>
-  <h1>DIABLO HUB</h1>
-  <div id="menuToggle" aria-label="فتح القائمة" role="button" tabindex="0" aria-expanded="false">
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
-</header>
+        <!-- الصفحة الثانية: النشر -->
+        <div id="publish-page" style="display: none;">
+            <h2 class="mb-4">صفحة النشر</h2>
+            <form id="publish-form">
+                <div class="mb-3">
+                    <label for="title" class="form-label">العنوان</label>
+                    <input type="text" class="form-control" id="title" placeholder="أدخل العنوان" required>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">الوصف</label>
+                    <textarea class="form-control" id="description" rows="4" placeholder="أدخل الوصف" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-success btn-lg">نشر</button>
+            </form>
+            <div id="messages" class="mt-3"></div>
+            <button class="btn btn-info mt-3" onclick="showPosts()">عرض المنشورات</button>
+        </div>
 
-<nav id="sidebar" aria-hidden="true">
-  <h2>DIABLO HUB</h2>
-  <button class="menu-btn primary" id="goHomeBtn" type="button">الرئيسية 🏠</button>
-  <button class="menu-btn secondary" id="openAdFormBtn" type="button">انشر طلب شراء +</button>
-  <button class="menu-btn primary" id="openSpecialAdBtn" type="button">إعلان مميز 💎</button>
-  <button class="menu-btn primary" id="toggleThemeBtn" type="button">تغيير المظهر 🌙</button>
+        <!-- صفحة عرض المنشورات -->
+        <div id="posts-page" style="display: none;">
+            <h2 class="mb-4">المنشورات</h2>
+            <div id="posts-list" class="list-group"></div>
+            <button class="btn btn-secondary mt-3" onclick="backToPublish()">العودة إلى النشر</button>
+        </div>
+    </div>
 
-  <div class="info-links" style="margin-top: 28px;">
-    <button type="button" data-info="terms">شروط الاستخدام 📜</button>
-    <button type="button" data-info="privacy">سياسة الخصوصية 🔒</button>
-    <button type="button" data-info="disclaimer">إخلاء المسؤولية ⚠️</button>
-  </div>
-</nav>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
+    <!-- JavaScript الخاص بالموقع -->
+    <script>
+        // تكوين Firebase (استخدم الكود الذي قدمته)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCGWNteBBsejx6UISfvnTY1YmnQeom7vNg",
+            authDomain: "daiblosmart.firebaseapp.com",
+            projectId: "daiblosmart",
+            storageBucket: "daiblosmart.appspot.com"
+        };
 
-<main>
-  <h2>أهلاً بك في أقوى منصة عقارية في المغرب</h2>
-  <p class="subtitle">ابحث أو انشر بسهولة، بخطوات بسيطة وموثوقة.</p>
+        // تهيئة Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-  <div id="browseButtons">
-    <button id="browseRealBtn" class="primary">تصفح العقارات</button>
-    <button id="publishOwnerBtn" class="secondary">(أريد النشر (مالك</button>
-  </div>
+        // متغير لتخزين الدور المختار
+        let userRole = '';
 
-  <nav id="catNav" role="tablist" aria-label="تصنيفات العقارات">
-    <button role="tab" aria-selected="true" class="active" data-type="all">الكل</button>
-    <button role="tab" aria-selected="false" data-type="شقة">شقق 🏙️</button>
-    <button role="tab" aria-selected="false" data-type="فيلا">فيلات 🏰</button>
-    <button role="tab" aria-selected="false" data-type="منزل">منازل 🏡</button>
-    <button role="tab" aria-selected="false" data-type="طلب">طلبات البحث 📋</button>
-  </nav>
+        // دالة اختيار الدور
+        function selectRole(role) {
+            userRole = role;
+            document.getElementById('welcome-page').style.display = 'none';
+            document.getElementById('publish-page').style.display = 'block';
+        }
 
-  <section id="adsList" aria-live="polite" aria-relevant="additions">
-    <!-- الإعلانات تظهر هنا -->
-  </section>
-</main>
+        // دالة العودة إلى النشر
+        function backToPublish() {
+            document.getElementById('posts-page').style.display = 'none';
+            document.getElementById('publish-page').style.display = 'block';
+        }
 
-<button id="addAdBtn" aria-label="نشر إعلان جديد" title="نشر إعلان جديد">+</button>
+        // معالجة نموذج النشر
+        document.getElementById('publish-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
 
-<!-- Modal للنشر -->
-<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-  <div class="modal" id="adModal" tabindex="0" aria-describedby="modalDescr">
-    <h2 id="modalTitle">ماذا تبحث عنه؟ ✨</h2>
-    <form id="adForm" novalidate>
-      <input id="city" placeholder="المدينة المطلوبة" type="text" required autocomplete="off" aria-required="true" />
-      <input id="budget" placeholder="الميزانية (د.م)" type="number" min="0" required aria-required="true" />
-      <select id="adType" required aria-required="true" aria-label="نوع العقار">
-        <option value="" disabled selected>اختر نوع العقار</option>
-        <option value="شقة">شقة</option>
-        <option value="فيلا">فيلا</option>
-        <option value="منزل">منزل</option>
-        <option value="طلب">طلب شراء</option>
-      </select>
-      <input id="phone" placeholder="رقم الهاتف (8-15 رقم)" type="tel" required pattern="^\d{8,15}$" aria-required="true" />
-      <button type="submit" aria-label="تأكيد ونشر الطلب">تأكيد ونشر الطلب</button>
-      <button type="button" id="cancelAdBtn" class="cancel">إلغاء</button>
-    </form>
-  </div>
-</div>
+            try {
+                // حفظ البيانات في Firestore
+                await db.collection('posts').add({
+                    title: title,
+                    description: description,
+                    role: userRole,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                document.getElementById('messages').innerHTML = '<div class="alert alert-success">تم النشر بنجاح!</div>';
+                document.getElementById('publish-form').reset();
+            } catch (error) {
+                console.error('خطأ في النشر:', error);
+                document.getElementById('messages').innerHTML = '<div class="alert alert-danger">حدث خطأ أثناء النشر. تحقق من اتصال Firebase.</div>';
+            }
+        });
 
-<!-- Modal المعلومات (شروط، سياسة، إخلاء، مميز) -->
-<div class="modal-overlay" id="infoOverlay" role="dialog" aria-modal="true" aria-labelledby="infoTitle" aria-describedby="infoContent">
-  <div class="modal" tabindex="0">
-    <h2 id="infoTitle">عنوان</h2>
-    <pre id="infoContent" style="white-space: pre-line; font-family: 'Cairo', sans-serif;"></pre>
-    <button id="closeInfoBtn" class="close">إغلاق</button>
-  </div>
-</div>
+        // دالة عرض المنشورات
+        async function showPosts() {
+            try {
+                const querySnapshot = await db.collection('posts').orderBy('timestamp', 'desc').get();
+                const postsList = document.getElementById('posts-list');
+                postsList.innerHTML = ''; // مسح القائمة السابقة
 
-<script>
-  // Firebase configuration with your keys
-  const firebaseConfig = {
-    apiKey: "AIzaSyCGWNteBBsejx6UISfvnTY1YmnQeom7vNg",
-    authDomain: "daiblosmart.firebaseapp.com",
-    projectId: "daiblosmart",
-    storageBucket: "daiblosmart.appspot.com",
-    messagingSenderId: "1234567890",  // عدلها مع الرقم الحقيقي
-    appId: "1:1234567890:web:abcdef123456" // عدلها مع الرقم الحقيقي
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+                querySnapshot.forEach((doc) => {
+                    const post = doc.data();
+                    const postItem = document.createElement('div');
+                    postItem.className = 'list-group-item';
+                    postItem.innerHTML = `
+                        <h5>${post.title}</h5>
+                        <p>${post.description}</p>
+                        <small>الدور: ${post.role} | التاريخ: ${post.timestamp ? post.timestamp.toDate().toLocaleString() : 'غير محدد'}</small>
+                    `;
+                    postsList.appendChild(postItem);
+                });
 
-  // عناصر DOM
-  const menuToggle = document.getElementById('menuToggle');
-  const sidebar = document.getElementById('sidebar');
-  const goHomeBtn = document.getElementById('goHomeBtn');
-  const openAdFormBtn = document.getElementById('openAdFormBtn');
-  const openSpecialAdBtn = document.getElementById('openSpecialAdBtn');
-  const toggleThemeBtn = document.getElementById('toggleThemeBtn');
-
-  const browseRealBtn = document.getElementById('browseRealBtn');
-  const publishOwnerBtn = document.getElementById('publishOwnerBtn');
-
-  const catNav = document.getElementById('catNav');
-  const adsList = document.getElementById('adsList');
-
-  const addAdBtn = document.getElementById('addAdBtn');
-
-  const modalOverlay = document.getElementById('modalOverlay');
-  const adModal = document.getElementById('adModal');
-  const adForm = document.getElementById('adForm');
-  const cancelAdBtn = document.getElementById('cancelAdBtn');
-
-  const infoOverlay = document.getElementById('infoOverlay');
-  const infoTitle = document.getElementById('infoTitle');
-  const infoContent = document.getElementById('infoContent');
-  const closeInfoBtn = document.getElementById('closeInfoBtn');
-
-  // محتوى النوافذ المنبثقة
-  const infoTexts = {
-    terms: `شروط الاستخدام
-يرجى قراءة شروط الاستخدام بعناية. باستخدام Diablo Hub، فإنك توافق على الالتزام بالقواعد التالية:
-1. دقة المعلومات: يجب أن تكون جميع العقارات والطلبات المنشورة حقيقية وموجودة في الواقع.
-2. المحتوى: يمنع نشر أي محتوى يروج للعنف، التمييز، أو يخالف القوانين الجاري بها العمل في المملكة المغربية.
-3. المسؤولية: المستخدم مسؤول بالكامل عن صحة أرقام الهاتف والمعلومات المقدمة.
-4. التعديلات: نحتفظ بالحق في حذف أي إعلان يبين أنه مضلل أو وهمي دون سابق إنذار.`,
-
-    privacy: `سياسة الخصوصية
-نحن نهتم بخصوصيتك وفقًا للقانون المغربي 08-09 المتعلق بحماية المعطيات الشخصية:
-1. البيانات التي نجمعها: نجمع فقط المعلومات التي تقدمها طوعًا (الاسم، رقم الهاتف، الموقع) بغرض تسهيل عملية التواصل العقاري.
-2. استخدام البيانات: نستخدم معرف المتصفح (localStorage) لتمكينك من إدارة وحذف إعلاناتك الخاصة فقط.
-3. ملفات تعريف الارتباط: قد نستخدم تقنيات بسيطة لتحسين تجربة المستخدم وتوافق الموقع مع Google Ads.
-4. عدم البيع: نحن نؤكد التزامنا بعدم بيع بياناتك لأي طرف ثالث لأغراض تسويقية غير مصرح بها.`,
-
-    disclaimer: `إخلاء المسؤولية
-تنبيه هام للمستخدمين:
-1. الوساطة: منصة Diablo Hub هي منصة إعلانية وسيطة فقط، ولا تدخل في عمليات البيع، الشراء، أو الكراء بين الأطراف.
-2. المعاينات: ننصح جميع المستخدمين بمعاينة العقارات على أرض الواقع والتأكد من الوثائق القانونية قبل دفع أي مبالغ مالية.
-3. الأمن المالي: المنصة غير مسؤولة عن أي احتيال قد يقع خارج نطاق الموقع، ونحن لا نطلب أبداً معلومات بنكية عبر المنصة.
-4. الروابط الخارجية: أي روابط تؤدي لمواقع أخرى هي على مسؤولية المستخدم الخاصة.`,
-
-    special: `تميّز الآن ✨
-اجعل إعلانك في المقدمة دائماً بلون جذاب.
-سعر المنشور المميز: 1$
-لتفعيل التميّز تواصل معنا عبر واتساب:`
-  };
-
-  // Helper: حفظ theme في localStorage
-  function applyTheme(theme) {
-    if(theme === 'light') {
-      document.body.style.backgroundColor = "#fefefe";
-      document.body.style.color = "#222";
-      toggleThemeBtn.textContent = "تغيير المظهر 🌙";
-      localStorage.setItem('theme','light');
-    } else {
-      document.body.style.backgroundColor = "#000";
-      document.body.style.color = "#fff";
-      toggleThemeBtn.textContent = "تغيير المظهر ☀️";
-      localStorage.setItem('theme','dark');
-    }
-  }
-  function loadTheme() {
-    const theme = localStorage.getItem('theme') || 'dark';
-    applyTheme(theme);
-  }
-
-  // Toggle sidebar
-  menuToggle.onclick = () => {
-    if(sidebar.classList.contains('open')){
-      sidebar.classList.remove('open');
-      menuToggle.setAttribute('aria-expanded','false');
-      sidebar.setAttribute('aria-hidden','true');
-    } else {
-      sidebar.classList.add('open');
-      menuToggle.setAttribute('aria-expanded','true');
-      sidebar.setAttribute('aria-hidden','false');
-    }
-  };
-  // Close sidebar by clicking on main content
-  window.addEventListener('click', e => {
-    if(!sidebar.contains(e.target) && !menuToggle.contains(e.target)){
-      sidebar.classList.remove('open');
-      menuToggle.setAttribute('aria-expanded','false');
-      sidebar.setAttribute('aria-hidden','true');
-    }
-  });
-
-  // NAVIGATION BUTTONS IN SIDEBAR
-  goHomeBtn.onclick = () => {
-    sidebar.classList.remove('open');
-    setActiveCategory('all');
-  };
-  openAdFormBtn.onclick = () => {
-    sidebar.classList.remove('open');
-    openAdModal();
-  };
-  openSpecialAdBtn.onclick = () => {
-    sidebar.classList.remove('open');
-    openInfoModal('special');
-  };
-  toggleThemeBtn.onclick = () => {
-    const currentTheme = localStorage.getItem('theme') || 'dark';
-    if(currentTheme === 'dark') applyTheme('light');
-    else applyTheme('dark');
-  };
-
-  // BROWSE BUTTONS IN MAIN
-  browseRealBtn.onclick = () => {
-    setActiveCategory('all');
-    window.scrollTo({top:0, behavior:"smooth"});
-  };
-  publishOwnerBtn.onclick = () => {
-    openAdModal();
-  };
-
-  // CATEGORY NAVIGATION
-  const catsBtns = catNav.querySelectorAll('button');
-  let currentCategory = 'all';
-
-  function setActiveCategory(type) {
-    currentCategory = type;
-    catsBtns.forEach(b=>{
-      if(b.getAttribute('data-type') === type){
-        b.classList.add('active');
-        b.setAttribute('aria-selected', 'true');
-      } else {
-        b.classList.remove('active');
-        b.setAttribute('aria-selected', 'false');
-      }
-    });
-    loadAds(type);
-  }
-
-  catsBtns.forEach(btn=>{
-    btn.onclick = () => {
-      setActiveCategory(btn.getAttribute('data-type'));
-      window.scrollTo({top:0, behavior:"smooth"});
-    }
-  });
-
-  // LOAD ADS FROM FIRESTORE
-  async function loadAds(filterType='all') {
-    adsList.innerHTML = `<p style="text-align:center;opacity:0.5;">جارٍ تحميل الإعلانات...</p>`;
-    try {
-      let query = db.collection("ads").orderBy("timestamp", "desc");
-      if(filterType !== 'all'){
-        if(filterType === 'طلب') query = db.collection("ads").where("type", "==", "طلب").orderBy("timestamp", "desc");
-        else query = db.collection("ads").where("type", "==", filterType).orderBy("timestamp", "desc");
-      }
-      const snapshot = await query.get();
-      if(snapshot.empty){
-        adsList.innerHTML = `<p style="text-align:center;opacity:0.5;">لا توجد إعلانات حالياً.</p>`;
-        return;
-      }
-      adsList.innerHTML = '';
-      snapshot.forEach(doc=>{
-        const data = doc.data();
-        // format number with commas
-        const formattedBudget = data.budget.toLocaleString('ar-EG');
-        const adEl = document.createElement('div');
-        adEl.className = 'ad-item';
-        adEl.innerHTML = `
-          <strong>المدينة:</strong> ${escapeHtml(data.city)} |
-          <strong>النوع:</strong> ${escapeHtml(data.type)} |
-          <strong>الميزانية:</strong> ${formattedBudget} د.م |
-          <strong>الهاتف:</strong> <a href="tel:${escapeHtml(data.phone)}">${escapeHtml(data.phone)}</a>
-        `;
-        adsList.appendChild(adEl);
-      });
-    } catch(e) {
-      adsList.innerHTML = `<p style="text-align:center;opacity:0.5;">حدث خطأ أثناء تحميل الإعلانات.</p>`;
-      console.error(e);
-    }
-  }
-
-  // ESCAPE HTML TO PREVENT XSS
-  function escapeHtml(text) {
-    return text.replace(/[&<>"']/g, function(m) {
-      return {'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[m];
-    });
-  }
-
-  // OPEN AND CLOSE AD MODAL
-  function openAdModal() {
-    adForm.reset();
-    modalOverlay.classList.add('active');
-    adModal.focus();
-  }
-  function closeAdModal() {
-    modalOverlay.classList.remove('active');
-    adForm.reset();
-  }
-
-  addAdBtn.onclick = openAdModal;
-  openAdFormBtn.onclick = openAdModal;
-  
-  cancelAdBtn.onclick = closeAdModal;
-  modalO
+                document.getElementById('publish-page').style.display = 'none';
+                document.getElementById('posts-page').style.display = 'block';
+            } catch (error) {
+                console.error('خطأ في جلب المنشورات:', error);
+                document.getElementById('messages').innerHTML = '<div class="alert alert-danger">حدث خطأ في جلب المنشورات.</div>';
+            }
+        }
+    </script>
+</body>
+</html>
