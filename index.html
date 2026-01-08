@@ -20,6 +20,7 @@
         .side-menu.active{right:0;}
         .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);display:none;z-index:9400;}
         
+        /* Search Box Style */
         .search-container{padding:10px 5%; background:var(--bg);}
         .search-box{width:100%; padding:12px 15px; border-radius:10px; border:1px solid var(--border); background:var(--card); color:var(--t); font-family:'Cairo'; outline:none; transition:0.3s;}
         .search-box:focus{border-color:var(--p); box-shadow: 0 0 5px rgba(255,69,0,0.3);}
@@ -29,22 +30,13 @@
         .cat-btn.active{background:var(--p);color:white;border-color:var(--p);}
         .post-card{background:var(--card);border:1px solid var(--border);border-radius:15px;margin:15px 5%;padding:15px;position:relative;}
         .price-tag{position:absolute;top:10px;left:10px;background:#25d366;color:white;padding:3px 12px;border-radius:20px;font-weight:bold;}
-        .ref-tag{font-size:11px; color:var(--p); opacity:0.7; margin-top:5px; display:block;}
-        
         .btn{background:var(--p);color:white;border:none;padding:12px;border-radius:8px;cursor:pointer;font-weight:bold;width:100%;margin-top:10px;text-align:center;text-decoration:none;display:block;}
-        #publishModal, #premiumPage, #policyModal, #investModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:10001;align-items:center;justify-content:center;padding:20px;}
+        #publishModal, #premiumPage, #policyModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:10001;align-items:center;justify-content:center;padding:20px;}
         .modal-content{background:var(--card);padding:20px;border-radius:15px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;}
         input,textarea,select{width:100%;padding:12px;margin:8px 0;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--t);box-sizing:border-box;}
         .loading-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.9);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:20000;color:white;}
         .publish-btn-main{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);width:60px;height:60px;background:var(--p);border-radius:50%;display:none;align-items:center;justify-content:center;z-index:9000;border:none;color:white;font-size:30px;box-shadow:0 4px 15px rgba(255,69,0,0.4);}
         .whatsapp-btn{background:#25d366; color:white; border-radius:50%; width:60px; height:60px; display:flex; align-items:center; justify-content:center; font-size:30px; margin:20px auto; text-decoration:none;}
-        
-        .file-upload-label{display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; border:2px dashed var(--border); border-radius:10px; cursor:pointer; color:var(--p); margin:10px 0;}
-        .file-upload-label i{font-size:30px; margin-bottom:5px;}
-        .invest-btn{background:#007bff; font-size:12px; padding:8px;}
-        .premium-feature{text-align:right; background:rgba(255,215,0,0.1); padding:10px; border-radius:10px; margin:10px 0; border-right:3px solid var(--gold);}
-        .tag-info{display:inline-block; background:rgba(255,69,0,0.1); color:var(--p); padding:2px 8px; border-radius:5px; font-size:12px; margin-top:5px; margin-left:5px;}
-        .roi-card{background:rgba(0,123,255,0.1); border:1px solid #007bff; padding:15px; border-radius:10px; margin:15px 0;}
     </style>
 </head>
 <body>
@@ -68,7 +60,7 @@
     </header>
 
     <div class="search-container">
-        <input type="text" id="searchInput" class="search-box" placeholder="ابحث عن: مسبح، مراكش، أو رقم المرجع..." oninput="listenToPosts()">
+        <input type="text" id="searchInput" class="search-box" placeholder="ابحث عن منزل، شقة، مدينة..." oninput="listenToPosts()">
     </div>
 
     <div class="categories">
@@ -81,17 +73,6 @@
 
     <div id="feed"></div>
     <button class="publish-btn-main" id="mainPubBtn" onclick="document.getElementById('publishModal').style.display='flex'">+</button>
-</div>
-
-<div id="investModal">
-    <div class="modal-content">
-        <h3 style="color:#007bff; text-align:center;"><i class="fas fa-chart-line"></i> تحليل العائد الاستثماري</h3>
-        <div id="investDetails"></div>
-        <p style="font-size:10px; color:gray; text-align:center; margin-top:10px;">
-            ⚠️ إخلاء مسؤولية: هذه الأرقام هي تقديرات مبنية على متوسط سوق العقار المغربي ولا تعتبر ضماناً للربح الفعلي.
-        </p>
-        <button class="btn" style="background:#007bff;" onclick="document.getElementById('investModal').style.display='none'">فهمت ذلك</button>
-    </div>
 </div>
 
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
@@ -121,16 +102,9 @@
         <select id="pType"><option value="شقق">شقة</option><option value="فيلات">فيلا</option><option value="منازل">منزل</option></select>
         <input type="text" id="pTitle" placeholder="عنوان العقار (مثال: شقة في طنجة)">
         <input type="number" id="pPrice" placeholder="السعر بالدرهم (DH)">
-        <textarea id="pDesc" rows="3" placeholder="التفاصيل الأساسية..."></textarea>
-        <input type="text" id="pExtras" placeholder="مميزات إضافية (مسبح، كراج، جنب البحر...)">
+        <textarea id="pDesc" rows="4" placeholder="التفاصيل..."></textarea>
         <input type="tel" id="pPhone" placeholder="رقم الهاتف للتواصل">
-        
-        <label class="file-upload-label">
-            <i class="fas fa-images"></i>
-            <span>إضافة صور العقار</span>
-            <input type="file" id="pFiles" multiple accept="image/*" onchange="handleFiles(this.files)" style="display:none;">
-        </label>
-        
+        <input type="file" id="pFiles" multiple accept="image/*" onchange="handleFiles(this.files)">
         <div id="preGrid" style="display:flex;gap:10px;margin:10px 0;overflow-x:auto;"></div>
         <button class="btn" onclick="uploadPost()">نشر الإعلان الآن</button>
         <button class="btn" style="background:#111;" onclick="document.getElementById('publishModal').style.display='none'">إلغاء</button>
@@ -139,13 +113,10 @@
 
 <div id="premiumPage">
     <div class="modal-content" style="text-align:center;">
-        <h2 style="color:var(--gold)">كن متميزاً ✨</h2>
-        <p>احصل على أفضل النتائج وبع عقارك بسرعة البرق</p>
-        <div class="premium-feature">✅ <b>انتشار أسرع:</b> يظهر إعلانك لآلاف المهتمين أولاً.</div>
-        <div class="premium-feature">✅ <b>لون مميز:</b> تصميم جذاب يجعل إعلانك يبرز عن البقية.</div>
-        <div class="premium-feature">✅ <b>تثبيت المنشور:</b> إعلانك سيبقى في أعلى القائمة دائماً.</div>
-        <p style="font-weight:bold; color:var(--p); font-size:20px;">فقط بـ 1$</p>
-        <p>لتفعيل التميز، تواصل معنا فوراً:</p>
+        <h2 style="color:var(--gold)">تميز الآن ✨</h2>
+        <p>اجعل إعلانك في المقدمة دائماً بلون جذاب.</p>
+        <p style="font-weight:bold; color:var(--p);">سعر المنشور المميز: 1$</p>
+        <p>لتفعيل التميز، تواصل معنا عبر واتساب:</p>
         <a href="https://wa.me/212695067840" target="_blank" class="whatsapp-btn"><i class="fab fa-whatsapp"></i></a>
         <button class="btn" onclick="document.getElementById('premiumPage').style.display='none'">إغلاق</button>
     </div>
@@ -165,11 +136,9 @@
         localStorage.setItem('myDiabloID', 'user_' + Math.random().toString(36).substr(2, 9));
     }
     const myID = localStorage.getItem('myDiabloID');
-    let isAdmin = false, userRole = 'investor'; 
     let tempImgs = [], currentCat = 'الكل';
 
     function setRole(role) {
-        userRole = role; 
         document.getElementById('startScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
         if(role === 'seller') document.getElementById('mainPubBtn').style.display = 'flex';
@@ -184,13 +153,6 @@
     function toggleTheme() {
         document.body.classList.toggle('light-mode');
         document.getElementById('themeIcon').className = document.body.classList.contains('light-mode') ? 'fas fa-sun' : 'fas fa-moon';
-    }
-
-    // وظيفة لعرض رسالة النظام داخل المودال
-    function showSystemMsg(title, msg) {
-        document.getElementById('policyTitle').innerText = title;
-        document.getElementById('policyBody').innerHTML = `<div style="text-align:center; padding:20px;">${msg}</div>`;
-        document.getElementById('policyModal').style.display = 'flex';
     }
 
     async function handleFiles(files) {
@@ -213,112 +175,73 @@
         }
     }
 
-    function showROI(price, type) {
-        let annualRental = price * 0.08; 
-        if(type === 'فيلات') annualRental = price * 0.10;
-        let roi = (annualRental / price) * 100;
-        
-        const details = document.getElementById('investDetails');
-        details.innerHTML = `
-            <div class="roi-card">
-                <p>💰 <b>سعر العقار:</b> ${price} DH</p>
-                <p>📈 <b>العائد السنوي المتوقع:</b> ${annualRental.toFixed(0)} DH</p>
-                <p>⭐ <b>نسبة الربح (ROI):</b> ${roi.toFixed(1)}%</p>
-            </div>
-            <p style="text-align:right; font-size:13px;">هذا العقار من نوع <b>${type}</b>، وتعتبر هذه النسبة ممتازة للاستثمار طويل المدى في المنطقة.</p>
-        `;
-        document.getElementById('investModal').style.display = 'flex';
-    }
-
     function uploadPost() {
         const t = document.getElementById('pTitle').value, p = document.getElementById('pPrice').value;
-        const extras = document.getElementById('pExtras').value;
         if(!t || !p || tempImgs.length === 0) return alert("أكمل البيانات والصور");
         document.getElementById('loadText').innerText = "جاري النشر...";
         document.getElementById('loading').style.display = 'flex';
-        const refId = "D" + Math.floor(1000 + Math.random() * 9000);
         db.collection("posts").add({
             title: t, price: p, desc: document.getElementById('pDesc').value,
-            extras: extras, type: document.getElementById('pType').value, 
-            phone: document.getElementById('pPhone').value, imgs: tempImgs, 
-            userId: myID, time: Date.now(), ref: refId
+            type: document.getElementById('pType').value, phone: document.getElementById('pPhone').value,
+            imgs: tempImgs, userId: myID, time: Date.now()
         }).then(() => location.reload());
     }
 
     function listenToPosts() {
         const feed = document.getElementById('feed');
-        const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
-        
-        // نظام الأدمن المحدث
-        if(searchTerm === '3505ilyas2008@') {
-            isAdmin = true;
-            document.getElementById('searchInput').value = "";
-            showSystemMsg("نظام الإدارة", "تم تفعيل صلاحيات الأدمن بنجاح ✅<br>يمكنك الآن التحكم الكامل بالمنشورات.");
-            listenToPosts();
-            return;
-        }
-        
-        // نظام إلغاء الأدمن المحدث
-        if(searchTerm === 'حدف 3505ilyas2008@') {
-            isAdmin = false;
-            document.getElementById('searchInput').value = "";
-            showSystemMsg("نظام الإدارة", "تم إيقاف صلاحيات الأدمن ❌<br>عُدت الآن لوضع المستخدم العادي.");
-            listenToPosts();
-            return;
-        }
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
 
         db.collection("posts").orderBy("time", "desc").onSnapshot(snap => {
             feed.innerHTML = "";
             snap.forEach(doc => {
                 const data = doc.data();
-                const combinedText = `${data.title} ${data.desc} ${data.extras || ''} ${data.ref || ''} ${data.type}`.toLowerCase();
-                const isMatch = combinedText.includes(searchTerm);
-                if(currentCat !== 'الكل' && data.type !== currentCat) return;
-                if(searchTerm && !isMatch) return;
-
-                let del = (data.userId === myID || isAdmin) ? `<button onclick="deletePost('${doc.id}')" style="background:red;border:none;color:white;padding:5px;border-radius:5px;cursor:pointer; font-size:12px; margin-top:10px; width:100%;">حذف المنشور</button>` : "";
-                let tagsHtml = data.extras ? data.extras.split(/[,،]+/).map(ex => `<span class="tag-info">${ex.trim()}</span>`).join('') : '';
+                const titleMatch = data.title.toLowerCase().includes(searchTerm);
+                const descMatch = data.desc.toLowerCase().includes(searchTerm);
                 
-                let investBtn = (userRole === 'investor') ? `<button class="btn invest-btn" onclick="showROI(${data.price}, '${data.type}')" style="flex:1; margin:0;">تحليل الربح 📈</button>` : "";
+                // تصفية بناءً على التصنيف + كلمة البحث
+                if(currentCat !== 'الكل' && data.type !== currentCat) return;
+                if(searchTerm && !titleMatch && !descMatch) return;
 
+                let del = (data.userId === myID) ? `<button onclick="deletePost('${doc.id}')" style="background:red;border:none;color:white;padding:5px;border-radius:5px;cursor:pointer;">حذف</button>` : "";
                 feed.innerHTML += `<div class="post-card">
                     <span class="price-tag">${data.price} DH</span>
                     <div style="display:flex;overflow-x:auto;gap:10px;margin-bottom:10px;">${data.imgs.map(img => `<img src="${img}" style="height:150px;border-radius:10px;min-width:200px;object-fit:cover;">`).join('')}</div>
-                    <h3 style="margin-bottom:5px;">${data.title}</h3>
-                    <p style="font-size:14px;opacity:0.8;margin:5px 0;">${data.desc}</p>
-                    <div style="margin-bottom:10px;">${tagsHtml}</div>
-                    <span class="ref-tag">مرجع: ${data.ref || '#N/A'}</span>
-                    <div style="display:flex;gap:10px; align-items:center; margin-top:10px;">
-                        <a href="tel:${data.phone}" class="btn" style="flex:1; margin:0;">اتصال</a>
-                        ${investBtn}
-                    </div>
-                    ${del}
+                    <h3>${data.title}</h3><p style="font-size:14px;opacity:0.8">${data.desc}</p>
+                    <div style="display:flex;gap:10px;"><a href="tel:${data.phone}" class="btn" style="flex:1">اتصال</a>${del}</div>
                 </div>`;
             });
         });
     }
 
-    function deletePost(id) { if(confirm("هل أنت متأكد من حذف هذا المنشور؟")) db.collection("posts").doc(id).delete(); }
+    function deletePost(id) { if(confirm("حذف الإعلان؟")) db.collection("posts").doc(id).delete(); }
+    
     function setCat(cat, btn) {
         currentCat = cat;
         document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         listenToPosts();
     }
+    
     function showPremium() { document.getElementById('premiumPage').style.display = 'flex'; }
+    
     function showPolicy(type) {
         const title = document.getElementById('policyTitle'), body = document.getElementById('policyBody');
         if(type === 'terms') { 
             title.innerText = "شروط الاستخدام"; 
-            body.innerHTML = "يرجى قراءة شروط الاستخدام بعناية... (باستخدامك لهذه المنصة، فإنك توافق على:
-تقديم معلومات صحيحة وصور واقعية للعقارات المعروضة.
-يمنع منعاً باتاً نشر أي محتوى يخالف القوانين المغربية أو الأخلاق العامة.
-الموقع مخصص للوساطة الإعلانية فقط؛ أي اتفاق مالي أو قانوني يتم خارج المنصة هو مسؤولية الأطراف المعنية فقط.
-يحتفظ فريق Diablo Hub بالحق في حذف أي إعلان مشبوه أو غير مكتمل البيانات دون سابق إنذار.)"; 
+            body.innerHTML = "يرجى قراءة شروط الاستخدام بعناية. باستخدامك لـ Diablo Hub، فإنك توافق على الالتزام بالقواعد التالية: <br>1. <b>دقة المعلومات:</b> يجب أن تكون جميع العقارات المنشورة حقيقية وموجودة في الواقع.<br>2. <b>المحتوى:</b> يمنع نشر أي محتوى يروج للعنف، التمييز، أو يخالف القوانين الجاري بها العمل في المملكة المغربية.<br>3. <b>المسؤولية:</b> المستخدم مسؤول بالكامل عن صحة أرقام الهاتف والمعلومات المقدمة.<br>4. <b>التعديلات:</b> نحتفظ بالحق في حذف أي إعلان يتبين أنه مضلل أو وهمي دون سابق إنذار."; 
         }
         else if(type === 'privacy') { 
             title.innerText = "سياسة الخصوصية"; 
-            body.innerHTML = "نحن نهتم بخصوصيتك... (خصوصية زوارنا لها أهمية بالغة بالنسبة لنا. في Diablo Hub:
-البيانات الشخصية: لا نجمع إلا البيانات الضرورية مثل رقم الهاتف لتسهيل التواصل بين البائع والمشتري.
-ملفات تعريف الارتباط (Cookies): نستخدم ملفات تعريف الارتباط لتحسين تجربة المستخدم وعرض إعلانات مخصصة عبر خدمات طرف ثالث مثل (Google Ads).
-الأمان: نلتزم بحماية بياناتك وفقاً للقوانين المعمول بها في المغرب (القانون 08-09
+            body.innerHTML = "نحن نهتم بخصوصيتك وفقاً للقانون المغربي 08-09 المتعلق بحماية المعطيات الشخصية:<br>1. <b>البيانات التي نجمعها:</b> نجمع فقط المعلومات التي تقدمها طوعاً (الاسم، رقم الهاتف، الموقع) لغرض تسهيل عملية التواصل العقاري.<br>2. <b>استخدام البيانات:</b> نستخدم معرف المتصفح (localStorage) لتمكينك من إدارة وحذف إعلاناتك الخاصة فقط.<br>3. <b>ملفات تعريف الارتباط:</b> قد نستخدم تقنيات بسيطة لتحسين تجربة المستخدم وتوافق الموقع مع Google Ads.<br>4. <b>عدم البيع:</b> نحن نؤكد التزامنا بعدم بيع بياناتك لأي طرف ثالث لأغراض تسويقية غير مصرح بها."; 
+        }
+        else { 
+            title.innerText = "إخلاء المسؤولية"; 
+            body.innerHTML = "تنبيه هام للمستخدمين:<br>1. <b>الوساطة:</b> منصة Diablo Hub هي منصة إعلانية وسيطة فقط، ولا تتدخل في عمليات البيع، الشراء، أو الكراء بين الأطراف.<br>2. <b>المعاينات:</b> ننصح جميع المستخدمين بمعاينة العقارات على أرض الواقع والتأكد من الوثائق القانونية قبل دفع أي مبالغ مالية.<br>3. <b>الأمن المالي:</b> المنصة غير مسؤولة عن أي احتيال قد يقع خارج نطاق الموقع، ونحن لا نطلب أبداً معلومات بنكية عبر المنصة.<br>4. <b>الروابط الخارجية:</b> أي روابط تؤدي لمواقع أخرى هي على مسؤولية المستخدم الخاصة."; 
+        }
+        document.getElementById('policyModal').style.display = 'flex';
+        toggleMenu();
+    }
+</script>
+</body>
+    </html>
+    
