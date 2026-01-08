@@ -1,168 +1,273 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="diablo-app">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الموقع الخاص بك</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- CSS الخاص بالموقع -->
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .container {
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            max-width: 700px;
-        }
-
-        h1, h2 {
-            color: #495057;
-        }
-
-        .btn {
-            border-radius: 25px;
-            font-weight: bold;
-        }
-
-        #welcome-page {
-            text-align: center;
-        }
-
-        #posts-list .list-group-item {
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Diablo Hub | New Generation</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+<style>
+:root{--p:#ff4500;--bg:#050505;--card:#111;--t:#fff;--border:#222;--gold:#ffd700;}
+.light-mode{--bg:#f5f5f5;--card:#fff;--t:#222;--border:#ddd;}
+body{background:var(--bg);color:var(--t);font-family:'Cairo',sans-serif;margin:0;padding-bottom:100px;overflow-x:hidden;}
+#startScreen{display:flex;position:fixed;inset:0;background:var(--bg);z-index:9999;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;}
+#mainApp{display:none;}
+header{padding:15px 5%;display:flex;justify-content:space-between;align-items:center;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:1000;}
+.search-bar{flex:1;display:flex;background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:5px 15px;margin:0 10px;}
+.search-bar input{border:none;background:none;color:var(--t);outline:none;width:100%;font-size:14px;}
+.categories{display:flex;overflow-x:auto;gap:10px;padding:10px 5%;white-space:nowrap;}
+.cat-btn{background:var(--card);border:1px solid var(--border);color:var(--t);padding:8px 15px;border-radius:20px;cursor:pointer;}
+.cat-btn.active{background:var(--p);border-color:var(--p);color:white;}
+.publish-btn-main{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);width:50px;height:40px;background:linear-gradient(90deg,#00f2ea 0%,#ff0050 100%);border-radius:12px;display:none;align-items:center;justify-content:center;z-index:9000;cursor:pointer;border:none;}
+.publish-btn-main::after{content:'+';color:black;font-size:25px;font-weight:bold;background:white;width:25px;height:25px;border-radius:5px;display:flex;align-items:center;justify-content:center;}
+.post-card{background:var(--card);border:1px solid var(--border);border-radius:15px;margin:15px 5%;padding:15px;position:relative;}
+.post-card.premium{border:2px solid var(--gold);box-shadow:0 0 15px rgba(255,215,0,0.2);}
+.price-tag{position:absolute;top:10px;left:10px;background:#25d366;color:white;padding:3px 12px;border-radius:20px;font-weight:bold;}
+.side-menu{position:fixed;top:0;right:-100%;width:280px;height:100%;background:var(--card);z-index:9500;transition:0.4s;padding:20px;box-sizing:border-box;overflow-y:auto;}
+.side-menu.active{right:0;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);display:none;z-index:9400;}
+.btn{background:var(--p);color:white;border:none;padding:12px;border-radius:8px;cursor:pointer;font-weight:bold;width:100%;margin-top:10px;text-align:center;text-decoration:none;display:block;}
+input,textarea,select{width:100%;padding:12px;margin:8px 0;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--t);box-sizing:border-box;}
+#premiumPage, #publishModal, #requestModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:10001;align-items:center;justify-content:center;padding:20px;}
+#premiumPage .content, #publishModal > div, #requestModal .content{background:var(--card);padding:20px;border-radius:15px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;}
+.request-card-main{background:linear-gradient(45deg, #1a1a1a, #222); border:1px dashed var(--p); border-radius:15px; margin:15px 5%; padding:15px;}
+.whatsapp-btn{background:#25d366; color:white; border-radius:50%; width:50px; height:50px; display:flex; align-items:center; justify-content:center; font-size:25px; margin:20px auto; cursor:pointer; text-decoration:none;}
+.loading-overlay{position:fixed; inset:0; background:rgba(0,0,0,0.8); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:20000; color:white;}
+</style>
 </head>
 <body>
-    <div class="container mt-5">
-        <!-- الصفحة الأولى: اختيار الدور -->
-        <div id="welcome-page">
-            <h1 class="text-center mb-4">مرحباً بك في الموقع</h1>
-            <p class="text-center mb-4">هل أنت مستثمر أو مالك؟</p>
-            <div class="text-center">
-                <button class="btn btn-primary btn-lg me-3" onclick="selectRole('investor')">مستثمر</button>
-                <button class="btn btn-secondary btn-lg" onclick="selectRole('owner')">مالك</button>
-            </div>
-        </div>
 
-        <!-- الصفحة الثانية: النشر -->
-        <div id="publish-page" style="display: none;">
-            <h2 class="mb-4">صفحة النشر</h2>
-            <form id="publish-form">
-                <div class="mb-3">
-                    <label for="title" class="form-label">العنوان</label>
-                    <input type="text" class="form-control" id="title" placeholder="أدخل العنوان" required>
-                </div>
-                <div class="mb-3">
-                    <label for="description" class="form-label">الوصف</label>
-                    <textarea class="form-control" id="description" rows="4" placeholder="أدخل الوصف" required></textarea>
-                </div>
-                <button type="submit" class="btn btn-success btn-lg">نشر</button>
-            </form>
-            <div id="messages" class="mt-3"></div>
-            <button class="btn btn-info mt-3" onclick="showPosts()">عرض المنشورات</button>
-        </div>
+<div id="loading" class="loading-overlay"><i class="fas fa-spinner fa-spin" style="font-size:40px;color:var(--p)"></i><p>جاري معالجة الصور ونشر الإعلان...</p></div>
 
-        <!-- صفحة عرض المنشورات -->
-        <div id="posts-page" style="display: none;">
-            <h2 class="mb-4">المنشورات</h2>
-            <div id="posts-list" class="list-group"></div>
-            <button class="btn btn-secondary mt-3" onclick="backToPublish()">العودة إلى النشر</button>
-        </div>
+<div id="startScreen">
+    <h1 style="color:var(--p);margin-bottom:5px;">DIABLO HUB</h1>
+    <p style="font-size:14px;opacity:0.8;">أهلاً بك في أقوى منصة عقارية</p>
+    <div style="width:100%;max-width:300px;margin-top:20px;">
+        <button class="btn" onclick="setRole('investor')">أنا مستثمر (تصفح العقارات)</button>
+        <button class="btn" style="background:#222;border:1px solid var(--p);" onclick="setRole('seller')">أنا مالك (أريد النشر)</button>
+    </div>
+</div>
+
+<div id="mainApp">
+    <header>
+        <button onclick="toggleMenu()" style="background:none;border:none;color:var(--p);font-size:24px;">☰</button>
+        <div class="search-bar"><input type="text" id="searchInput" placeholder="ابحث عن منزل، شقة..." oninput="filterPosts()"></div>
+        <button onclick="toggleTheme()" style="background:none;border:none;color:var(--p);"><i class="fas fa-moon" id="themeIcon"></i></button>
+    </header>
+
+    <div class="categories">
+        <button class="cat-btn active" onclick="setCat('الكل', this)">الكل</button>
+        <button class="cat-btn" onclick="setCat('شقق', this)">🏙️ شقق</button>
+        <button class="cat-btn" onclick="setCat('فيلات', this)">🏰 فيلات</button>
+        <button class="cat-btn" onclick="setCat('منازل', this)">🏡 منازل</button>
+        <button class="cat-btn" onclick="setCat('طلبات', this)">📋 طلبات البحث</button>
+        <button class="cat-btn" style="background:var(--gold);color:black;" onclick="showPremiumPage()">✨ تميز الآن</button>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
-    <!-- JavaScript الخاص بالموقع -->
-    <script>
-        // تكوين Firebase (استخدم الكود الذي قدمته)
-        const firebaseConfig = {
-            apiKey: "AIzaSyCGWNteBBsejx6UISfvnTY1YmnQeom7vNg",
-            authDomain: "daiblosmart.firebaseapp.com",
-            projectId: "daiblosmart",
-            storageBucket: "daiblosmart.appspot.com"
-        };
+    <div id="cloudFeed"></div>
+    <button class="publish-btn-main" id="mainPublishBtn" onclick="openPublishModal(false)"></button>
+</div>
 
-        // تهيئة Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+<div id="publishModal">
+    <div>
+        <h3 id="modalTitle" style="color:var(--p)">نشر عقار جديد</h3>
+        <select id="pType"><option value="شقق">شقة</option><option value="فيلات">فيلا</option><option value="منازل">منزل</option></select>
+        <input type="text" id="pTitle" placeholder="عنوان العقار">
+        <input type="number" id="pPrice" placeholder="السعر بالدولار">
+        <textarea id="pDesc" rows="4" placeholder="اكتب تفاصيل العقار هنا..."></textarea>
+        <input type="tel" id="pPhone" placeholder="رقم الهاتف">
+        <label class="btn" style="background:#333;cursor:pointer;"><input type="file" id="pFiles" multiple accept="image/*" onchange="handleFiles(this.files)" style="display:none;">📸 اختر الصور</label>
+        <div id="preGrid" style="display:flex;gap:10px;margin:10px 0;overflow-x:auto;"></div>
+        <button class="btn" id="uploadBtn" onclick="uploadToFirebase()">نشر الإعلان</button>
+        <button class="btn" style="background:#111;" onclick="closePublishModal()">إلغاء</button>
+    </div>
+</div>
 
-        // متغير لتخزين الدور المختار
-        let userRole = '';
+<div id="requestModal">
+    <div class="content">
+        <h3 style="color:var(--p)">أضف طلبك للجميع ✨</h3>
+        <input type="text" id="rCity" placeholder="المدينة المطلوبة">
+        <input type="number" id="rPrice" placeholder="الميزانية بالدولار">
+        <select id="rType"><option value="شقق">شقة</option><option value="فيلات">فيلا</option><option value="منازل">منزل</option></select>
+        <input type="tel" id="rPhone" placeholder="رقم التواصل">
+        <button class="btn" onclick="addRequest()">تأكيد ونشر الطلب</button>
+        <button class="btn" style="background:#111;" onclick="closeRequestModal()">إلغاء</button>
+    </div>
+</div>
 
-        // دالة اختيار الدور
-        function selectRole(role) {
-            userRole = role;
-            document.getElementById('welcome-page').style.display = 'none';
-            document.getElementById('publish-page').style.display = 'block';
-        }
+<div id="premiumPage">
+    <div class="content" style="text-align:center;">
+        <h2 style="color:var(--gold)">لماذا تختار الإعلان المميز؟ ✨</h2>
+        <ul style="text-align:right; line-height:1.8; font-size:15px;">
+            <li>🚀 <b>انتشار أسرع:</b> يظهر إعلانك لجميع المستخدمين في المقدمة.</li>
+            <li>📌 <b>تثبيت الإعلان:</b> يبقى إعلانك في أعلى القائمة الرئيسية.</li>
+            <li>🎨 <b>تصميم فريد:</b> إطار ذهبي لافت للانتباه يزيد من نسبة الاتصال.</li>
+            <li>💰 <b>سعر رمزي:</b> كل هذه المميزات بـ 1$ فقط!</li>
+        </ul>
+        <p style="margin-top:20px;">للتفعيل، تواصل مع الإدارة عبر واتساب:</p>
+        <a href="https://wa.me/213695067840" class="whatsapp-btn"><i class="fab fa-whatsapp"></i></a>
+        <button class="btn" style="background:#111;" onclick="closePremiumPage()">إغلاق</button>
+    </div>
+</div>
 
-        // دالة العودة إلى النشر
-        function backToPublish() {
-            document.getElementById('posts-page').style.display = 'none';
-            document.getElementById('publish-page').style.display = 'block';
-        }
+<div class="side-menu" id="sideMenu">
+    <h2 style="color:var(--p)">DIABLO HUB</h2>
+    <hr style="border:0;border-top:1px solid #333;margin:20px 0;">
+    <button class="btn" onclick="location.reload()">🏠 الرئيسية</button>
+    <button class="btn" style="background:#222;" onclick="openRequestModal()">➕ انشر طلب شراء</button>
+    <button class="btn" onclick="toggleTheme()">🌓 تغيير المظهر</button>
+</div>
 
-        // معالجة نموذج النشر
-        document.getElementById('publish-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const title = document.getElementById('title').value;
-            const description = document.getElementById('description').value;
+<div class="overlay" id="mainOverlay" onclick="toggleMenu()"></div>
 
-            try {
-                // حفظ البيانات في Firestore
-                await db.collection('posts').add({
-                    title: title,
-                    description: description,
-                    role: userRole,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                document.getElementById('messages').innerHTML = '<div class="alert alert-success">تم النشر بنجاح!</div>';
-                document.getElementById('publish-form').reset();
-            } catch (error) {
-                console.error('خطأ في النشر:', error);
-                document.getElementById('messages').innerHTML = '<div class="alert alert-danger">حدث خطأ أثناء النشر. تحقق من اتصال Firebase.</div>';
-            }
+<script>
+const firebaseConfig={apiKey:"AIzaSyCGWNteBBsejx6UISfvnTY1YmnQeom7vNg",authDomain:"daiblosmart.firebaseapp.com",projectId:"daiblosmart",storageBucket:"daiblosmart.firebasestorage.app"};
+firebase.initializeApp(firebaseConfig);
+const db=firebase.firestore();
+const auth=firebase.auth();
+
+let currentUser=null, tempImgs=[], isPremiumPost=false, currentCat='الكل';
+
+auth.onAuthStateChanged(u=>{ if(u) currentUser=u; });
+
+function setRole(role){
+    document.getElementById('startScreen').style.display='none';
+    document.getElementById('mainApp').style.display='block';
+    if(role==='seller') document.getElementById('mainPublishBtn').style.display='flex';
+    loadCloudData();
+}
+
+function loadCloudData(){
+    const feed=document.getElementById('cloudFeed'); feed.innerHTML="";
+    if(currentCat === 'طلبات') {
+        db.collection("diablo_requests").orderBy("time","desc").onSnapshot(snap=>{
+            feed.innerHTML = "<h2 style='padding:0 5%; font-size:18px;'>📋 طلبات الشراء والبحث</h2>";
+            snap.forEach(doc=>{
+                const r=doc.data();
+                feed.innerHTML+=`<div class="request-card-main">
+                    <h4 style="color:var(--p);margin:0;">🚩 مطلوب ${r.type}</h4>
+                    <p>المكان: ${r.city} | الميزانية: ${r.price}$</p>
+                    <a href="tel:${r.phone}" class="btn" style="padding:5px; font-size:12px;">📞 تواصل مع المشتري</a>
+                </div>`;
+            });
         });
+    } else {
+        db.collection("diablo_posts").orderBy("isPremium","desc").orderBy("time","desc").onSnapshot(snap=>{
+            feed.innerHTML="";
+            snap.forEach(doc=>{
+                const p=doc.data();
+                if(currentCat!=='الكل' && p.type!==currentCat) return;
+                let delBtn=(currentUser && currentUser.uid===p.userId)?`<button class="btn" style="background:red;padding:5px;font-size:12px;" onclick="deletePost('${doc.id}')">حذف</button>`:'';
+                feed.innerHTML+=`<div class="post-card ${p.isPremium?'premium':''}" data-title="${p.title.toLowerCase()}">
+                    <span class="price-tag">${p.price}$</span>
+                    <div style="display:flex;overflow-x:auto;gap:10px;margin-bottom:10px;">${p.imgs.map(i=>`<img src="${i}" style="height:150px;border-radius:10px;object-fit:cover;">`).join('')}</div>
+                    <h3 style="margin:5px 0;">${p.title}</h3><p style="font-size:14px; opacity:0.9;">${p.desc}</p>
+                    <a href="tel:${p.phone}" class="btn">📞 اتصال</a>${delBtn}</div>`;
+            });
+        });
+    }
+}
 
-        // دالة عرض المنشورات
-        async function showPosts() {
-            try {
-                const querySnapshot = await db.collection('posts').orderBy('timestamp', 'desc').get();
-                const postsList = document.getElementById('posts-list');
-                postsList.innerHTML = ''; // مسح القائمة السابقة
+function deletePost(id){ if(confirm("حذف الإعلان؟")) db.collection("diablo_posts").doc(id).delete(); }
 
-                querySnapshot.forEach((doc) => {
-                    const post = doc.data();
-                    const postItem = document.createElement('div');
-                    postItem.className = 'list-group-item';
-                    postItem.innerHTML = `
-                        <h5>${post.title}</h5>
-                        <p>${post.description}</p>
-                        <small>الدور: ${post.role} | التاريخ: ${post.timestamp ? post.timestamp.toDate().toLocaleString() : 'غير محدد'}</small>
-                    `;
-                    postsList.appendChild(postItem);
-                });
+function setCat(cat, btn){
+    currentCat = cat;
+    document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    loadCloudData();
+}
 
-                document.getElementById('publish-page').style.display = 'none';
-                document.getElementById('posts-page').style.display = 'block';
-            } catch (error) {
-                console.error('خطأ في جلب المنشورات:', error);
-                document.getElementById('messages').innerHTML = '<div class="alert alert-danger">حدث خطأ في جلب المنشورات.</div>';
-            }
-        }
-    </script>
+function toggleMenu(){
+    let menu = document.getElementById('sideMenu'), overlay = document.getElementById('mainOverlay');
+    menu.style.right = (menu.style.right==='0px') ? '-100%' : '0px';
+    overlay.style.display = (overlay.style.display==='block') ? 'none' : 'block';
+}
+
+function toggleTheme(){
+    document.body.classList.toggle('light-mode');
+    document.getElementById('themeIcon').className = document.body.classList.contains('light-mode') ? 'fas fa-sun' : 'fas fa-moon';
+}
+
+function filterPosts(){
+    let q = document.getElementById('searchInput').value.toLowerCase();
+    document.querySelectorAll('.post-card').forEach(c=>{ c.style.display = c.getAttribute('data-title').includes(q) ? 'block' : 'none'; });
+}
+
+function openPublishModal(p){ isPremiumPost=p; document.getElementById('publishModal').style.display='flex'; }
+function closePublishModal(){ document.getElementById('publishModal').style.display='none'; }
+
+// وظيفة جبارة لضغط الصور قبل الرفع
+async function handleFiles(files){
+    for(let f of Array.from(files)){
+        const compressedDataUrl = await compressImage(f);
+        let id = Date.now() + Math.random();
+        tempImgs.push({src: compressedDataUrl, id: id});
+        document.getElementById('preGrid').innerHTML+=`<div id="${id}" style="position:relative; min-width:80px;"><img src="${compressedDataUrl}" style="width:80px;height:80px;border-radius:8px; object-fit:cover;"><button onclick="removeImg(${id})" style="position:absolute;top:-5px;right:-5px;background:red;color:white;border:none;border-radius:50%;width:22px;height:22px;">✕</button></div>`;
+    }
+}
+
+function compressImage(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const maxWidth = 800; // تصغير العرض لضمان السرعة
+                const scale = maxWidth / img.width;
+                canvas.width = maxWidth;
+                canvas.height = img.height * scale;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                // ضغط الجودة لـ 60% (توازن بين الشكل والحجم)
+                resolve(canvas.toDataURL('image/jpeg', 0.6));
+            };
+        };
+    });
+}
+
+function removeImg(id){ tempImgs=tempImgs.filter(i=>i.id!=id); document.getElementById(id).remove(); }
+
+async function uploadToFirebase(){
+    const t=document.getElementById('pTitle').value, d=document.getElementById('pDesc').value, ph=document.getElementById('pPhone').value, pr=document.getElementById('pPrice').value, tp=document.getElementById('pType').value;
+    if(!t || !pr || tempImgs.length===0) return alert("الرجاء إضافة العنوان والسعر والصور!");
+    
+    document.getElementById('loading').style.display='flex';
+    
+    try {
+        await db.collection("diablo_posts").add({
+            title: t, desc: d, phone: ph, price: pr, type: tp, 
+            imgs: tempImgs.map(i=>i.src), 
+            time: Date.now(), 
+            isPremium: isPremiumPost, 
+            userId: currentUser ? currentUser.uid : 'guest'
+        });
+        alert("تم نشر إعلانك بنجاح!");
+        location.reload();
+    } catch(e) {
+        alert("فشل النشر، حاول تقليل عدد الصور أو جودة الإنترنت.");
+        document.getElementById('loading').style.display='none';
+    }
+}
+
+function openRequestModal(){ document.getElementById('requestModal').style.display='flex'; }
+function closeRequestModal(){ document.getElementById('requestModal').style.display='none'; }
+
+function addRequest(){
+    const city=document.getElementById('rCity').value, price=document.getElementById('rPrice').value, type=document.getElementById('rType').value, phone=document.getElementById('rPhone').value;
+    if(!city || !price || !phone) return alert("أكمل كافة البيانات.");
+    db.collection("diablo_requests").add({city, price, type, phone, time:Date.now()})
+    .then(()=>{ alert("تم نشر طلبك!"); closeRequestModal(); currentCat='طلبات'; loadCloudData(); });
+}
+
+function showPremiumPage(){ document.getElementById('premiumPage').style.display='flex'; }
+function closePremiumPage(){ document.getElementById('premiumPage').style.display='none'; }
+</script>
 </body>
-</html>
+    </html>
+    
