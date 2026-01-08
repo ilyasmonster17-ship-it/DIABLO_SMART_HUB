@@ -38,6 +38,12 @@
         .loading-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.9);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:20000;color:white;}
         .publish-btn-main{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);width:60px;height:60px;background:var(--p);border-radius:50%;display:none;align-items:center;justify-content:center;z-index:9000;border:none;color:white;font-size:30px;box-shadow:0 4px 15px rgba(255,69,0,0.4);}
         .whatsapp-btn{background:#25d366; color:white; border-radius:50%; width:60px; height:60px; display:flex; align-items:center; justify-content:center; font-size:30px; margin:20px auto; text-decoration:none;}
+        
+        /* New Styles */
+        .file-upload-label{display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; border:2px dashed var(--border); border-radius:10px; cursor:pointer; color:var(--p); margin:10px 0;}
+        .file-upload-label i{font-size:30px; margin-bottom:5px;}
+        .invest-btn{background:#007bff; font-size:12px; padding:8px;}
+        .premium-feature{text-align:right; background:rgba(255,215,0,0.1); padding:10px; border-radius:10px; margin:10px 0; border-right:3px solid var(--gold);}
         .tag-info{display:inline-block; background:rgba(255,69,0,0.1); color:var(--p); padding:2px 8px; border-radius:5px; font-size:12px; margin-top:5px; margin-left:5px;}
     </style>
 </head>
@@ -107,7 +113,13 @@
         <textarea id="pDesc" rows="3" placeholder="التفاصيل الأساسية..."></textarea>
         <input type="text" id="pExtras" placeholder="مميزات إضافية (مسبح، كراج، جنب البحر...)">
         <input type="tel" id="pPhone" placeholder="رقم الهاتف للتواصل">
-        <input type="file" id="pFiles" multiple accept="image/*" onchange="handleFiles(this.files)">
+        
+        <label class="file-upload-label">
+            <i class="fas fa-images"></i>
+            <span>إضافة صور العقار</span>
+            <input type="file" id="pFiles" multiple accept="image/*" onchange="handleFiles(this.files)" style="display:none;">
+        </label>
+        
         <div id="preGrid" style="display:flex;gap:10px;margin:10px 0;overflow-x:auto;"></div>
         <button class="btn" onclick="uploadPost()">نشر الإعلان الآن</button>
         <button class="btn" style="background:#111;" onclick="document.getElementById('publishModal').style.display='none'">إلغاء</button>
@@ -116,10 +128,15 @@
 
 <div id="premiumPage">
     <div class="modal-content" style="text-align:center;">
-        <h2 style="color:var(--gold)">تميز الآن ✨</h2>
-        <p>اجعل إعلانك في المقدمة دائماً بلون جذاب.</p>
-        <p style="font-weight:bold; color:var(--p);">سعر المنشور المميز: 1$</p>
-        <p>لتفعيل التميز، تواصل معنا عبر واتساب:</p>
+        <h2 style="color:var(--gold)">كن متميزاً ✨</h2>
+        <p>احصل على أفضل النتائج وبع عقارك بسرعة البرق</p>
+        
+        <div class="premium-feature">✅ <b>انتشار أسرع:</b> يظهر إعلانك لآلاف المهتمين أولاً.</div>
+        <div class="premium-feature">✅ <b>لون مميز:</b> تصميم جذاب يجعل إعلانك يبرز عن البقية.</div>
+        <div class="premium-feature">✅ <b>تثبيت المنشور:</b> إعلانك سيبقى في أعلى القائمة دائماً.</div>
+        
+        <p style="font-weight:bold; color:var(--p); font-size:20px;">فقط بـ 1$</p>
+        <p>لتفعيل التميز، تواصل معنا فوراً:</p>
         <a href="https://wa.me/212695067840" target="_blank" class="whatsapp-btn"><i class="fab fa-whatsapp"></i></a>
         <button class="btn" onclick="document.getElementById('premiumPage').style.display='none'">إغلاق</button>
     </div>
@@ -139,7 +156,7 @@
         localStorage.setItem('myDiabloID', 'user_' + Math.random().toString(36).substr(2, 9));
     }
     const myID = localStorage.getItem('myDiabloID');
-    let isAdmin = false; // حالة الأدمن مخفية
+    let isAdmin = false; 
     let tempImgs = [], currentCat = 'الكل';
 
     function setRole(role) {
@@ -179,16 +196,20 @@
         }
     }
 
+    function calculateROI(price, type) {
+        let annualRental = price * 0.08; 
+        if(type === 'فيلات') annualRental = price * 0.10;
+        let roi = (annualRental / price) * 100;
+        alert(`تحليل الاستثمار لـ ${type}:\n- العائد السنوي المتوقع: ${annualRental.toFixed(0)} DH\n- نسبة الربح السنوية: ${roi.toFixed(1)}%\n\n*هذه تقديرات بناءً على سوق العقار المغربي.`);
+    }
+
     function uploadPost() {
         const t = document.getElementById('pTitle').value, p = document.getElementById('pPrice').value;
         const extras = document.getElementById('pExtras').value;
         if(!t || !p || tempImgs.length === 0) return alert("أكمل البيانات والصور");
         document.getElementById('loadText').innerText = "جاري النشر...";
         document.getElementById('loading').style.display = 'flex';
-        
-        // توليد رقم مرجع قصير
         const refId = "D" + Math.floor(1000 + Math.random() * 9000);
-
         db.collection("posts").add({
             title: t, price: p, desc: document.getElementById('pDesc').value,
             extras: extras, type: document.getElementById('pType').value, 
@@ -200,8 +221,6 @@
     function listenToPosts() {
         const feed = document.getElementById('feed');
         const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
-
-        // تفعيل وضع الأدمن بالكود السري
         if(searchTerm === '3505ilyas2008@') {
             isAdmin = true;
             alert("تم تفعيل صلاحيات الإدارة بنجاح ✅");
@@ -209,22 +228,16 @@
             listenToPosts();
             return;
         }
-
         db.collection("posts").orderBy("time", "desc").onSnapshot(snap => {
             feed.innerHTML = "";
             snap.forEach(doc => {
                 const data = doc.data();
                 const combinedText = `${data.title} ${data.desc} ${data.extras || ''} ${data.ref || ''} ${data.type}`.toLowerCase();
                 const isMatch = combinedText.includes(searchTerm);
-                
                 if(currentCat !== 'الكل' && data.type !== currentCat) return;
                 if(searchTerm && !isMatch) return;
-
-                // زر الحذف يظهر للمالك أو للأدمن
-                let del = (data.userId === myID || isAdmin) ? `<button onclick="deletePost('${doc.id}')" style="background:red;border:none;color:white;padding:5px;border-radius:5px;cursor:pointer; font-size:12px;">حذف المنشور ${isAdmin ? '(Admin)' : ''}</button>` : "";
-                
+                let del = (data.userId === myID || isAdmin) ? `<button onclick="deletePost('${doc.id}')" style="background:red;border:none;color:white;padding:5px;border-radius:5px;cursor:pointer; font-size:12px; margin-top:10px; width:100%;">حذف المنشور</button>` : "";
                 let tagsHtml = data.extras ? data.extras.split(/[,،]+/).map(ex => `<span class="tag-info">${ex.trim()}</span>`).join('') : '';
-
                 feed.innerHTML += `<div class="post-card">
                     <span class="price-tag">${data.price} DH</span>
                     <div style="display:flex;overflow-x:auto;gap:10px;margin-bottom:10px;">${data.imgs.map(img => `<img src="${img}" style="height:150px;border-radius:10px;min-width:200px;object-fit:cover;">`).join('')}</div>
@@ -232,17 +245,17 @@
                     <p style="font-size:14px;opacity:0.8;margin:5px 0;">${data.desc}</p>
                     <div style="margin-bottom:10px;">${tagsHtml}</div>
                     <span class="ref-tag">مرجع: ${data.ref || '#N/A'}</span>
-                    <div style="display:flex;gap:10px; align-items:center;">
-                        <a href="tel:${data.phone}" class="btn" style="flex:1">اتصال</a>
-                        ${del}
+                    <div style="display:flex;gap:10px; align-items:center; margin-top:10px;">
+                        <a href="tel:${data.phone}" class="btn" style="flex:1; margin:0;">اتصال</a>
+                        <button class="btn invest-btn" onclick="calculateROI(${data.price}, '${data.type}')" style="flex:1; margin:0;">تحليل الربح 📈</button>
                     </div>
+                    ${del}
                 </div>`;
             });
         });
     }
 
-    function deletePost(id) { if(confirm("هل أنت متأكد من حذف هذا المنشور نهائياً؟")) db.collection("posts").doc(id).delete(); }
-    
+    function deletePost(id) { if(confirm("هل أنت متأكد من حذف هذا المنشور؟")) db.collection("posts").doc(id).delete(); }
     function setCat(cat, btn) {
         currentCat = cat;
         document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
@@ -269,4 +282,5 @@
     }
 </script>
 </body>
-</html>
+    </html>
+    
